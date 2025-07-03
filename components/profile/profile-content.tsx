@@ -78,6 +78,8 @@ export function ProfileContent({ username, currentUserId }: ProfileContentProps)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [activeTab, setActiveTab] = useState("posts")
   const router = useRouter()
+   const [open, setOpen] = useState(false);
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -476,14 +478,15 @@ export function ProfileContent({ username, currentUserId }: ProfileContentProps)
               </Button>
               <Button variant="ghost" size="icon" asChild>
                 <Link href={`/profile/${currentProfile?.username}`}>
-                  <Avatar className="h-8 w-8">
+                  <Avatar className="h-8 w-8" onClick={(e)=>setOpen(true)}>
                     <AvatarImage src={currentProfile?.avatar_url || undefined} />
                     <AvatarFallback className="text-xs">
                       {currentProfile?.display_name?.charAt(0)?.toUpperCase() || "ব"}
                     </AvatarFallback>
                   </Avatar>
-                  {currentProfile.avatar_url!==null?
-                  <ImageViewer src={currentProfile.avatar_url}/>}
+                  {currentProfile.avatar_url!==null &&
+                  <ImageViewer src={currentProfile.avatar_url} isOpen={open}
+        onClose={() => setOpen(false)}/>}
                 </Link>
               </Button>
             </>
