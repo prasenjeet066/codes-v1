@@ -211,7 +211,7 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
         <div className="divide-y">
           <h3 className="my-2 px-4">All Reply</h3>
           {/* Comment Box */}
-<div className="flex items-center gap-2 px-4 py-3">
+<div className="flex items-center gap-2 px-4 py-3 w-full">
   {/* Avatar */}
   {currentUser?.avatar_url ? (
     <Image
@@ -230,7 +230,9 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
     <input
       type="text"
       value={comment}
-      onChange={e => setComment(e.target.value)}
+      onChange={e => {
+        
+        setComment("@"+post.username+""+e.target.value)}}
       placeholder="Write a reply..."
       className="flex-1 bg-transparent outline-none px-2 py-1"
       disabled={isPosting}
@@ -248,7 +250,7 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
 
   {/* Post Button */}
   <Button
-    className="ml-2"
+    className="ml-2 bg-gray-800 text-white rounded-full"
     disabled={!comment.trim() || isPosting}
     onClick={async () => {
       setIsPosting(true)
