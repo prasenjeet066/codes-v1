@@ -20,8 +20,13 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
   const [comment, setComment] = useState("")
-  const [isPosting, setIsPosting] = useState(false)
-  const [isReply , setReplying] = useState()
+  //const [isPosting, setIsPosting] = useState(false)
+ // const [isReply , setReplying] = useState()
+  const [commentState, setCommentState] = useState<CommentState>({
+  text: '',
+  replyingTo: null
+});
+const [isPosting, setIsPosting] = useState(false);
   useEffect(() => {
     fetchCurrentUser()
     fetchPostAndReplies()
@@ -35,7 +40,36 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
       console.error("Error fetching current user:", error)
     }
   }
+const handlePostComment = async () => {
+  if (!commentState.text.trim() || isPosting) return;
+  
+  setIsPosting(true);
+  try {
+    // Create the comment data
+    const commentData = {
+      content: commentState.text,
+      user_id: userId,
+      reply_to: postId,
+      created_at: new Date().toISOString(),
+      mentioned_user: commentState.replyingTo
+    };
 
+    // Insert the comment into Supabase
+    const { error } = await supabase
+      .from('posts')
+      .insert(commentData);
+
+    if (error) throw error;
+
+    // Clear the comment state and refresh
+    setCommentState({ text: '', replyingTo: null });
+    handleReplyCreated();
+  } catch (error) {
+    console.error('Error posting comment:', error);
+  } finally {
+    setIsPosting(false);
+  }
+}
   const fetchPostAndReplies = async () => {
     try {
       setIsLoading(true)
@@ -228,27 +262,42 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
     <div className="w-10 h-10 rounded-full bg-gray-200" />
   )}
 
-  {/* Rounded Input */}
+  {/* Rounded Input Container */}
   <div className="flex-1 flex items-center bg-gray-100 rounded-full px-3 py-1">
-    {isReply!==null ? isReply}
-    <input
-      type="text"
-      value={comment}
-      onChange={e => {
-        setReplying(
-          <>
-            <input type="text" disabled className="border-none text-blue-400 outline-none bg-none" value={"@"+post.username}></input>
-          </>
-        )
-        setComment(e.target.value)}}
-      placeholder="Write a reply..."
-      className="w-full bg-transparent outline-none px-2 py-1"
-      disabled={isPosting}
-    />
+    <div className="flex flex-1 items-center gap-1">
+      {/* Mention Tag */}
+      {commentState.replyingTo && (
+        <span className="text-blue-400 text-sm">
+          @{commentState.replyingTo}
+        </span>
+      )}
+      
+      {/* Input Field */}
+      <input
+        type="text"
+        value={commentState.text}
+        onChange={(e) => setCommentState(prev => ({
+          ...prev,
+          text: e.target.value
+        }))}
+        onFocus={() => {
+          if (!commentState.replyingTo) {
+            setCommentState(prev => ({
+              ...prev,
+              replyingTo: post.username
+            }));
+          }
+        }}
+        placeholder="Write a reply..."
+        className="flex-1 bg-transparent outline-none px-2 py-1"
+        disabled={isPosting}
+      />
+    </div>
+
     {/* Attach Icon */}
     <button
       type="button"
-      className="text-gray-400 hover:text-gray-600 flex items-center"
+      className="text-gray-400 hover:text-gray-600 flex items-center ml-2"
       tabIndex={-1}
       aria-label="Attach file"
     >
@@ -259,19 +308,14 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
   {/* Post Button */}
   <Button
     className="bg-gray-800 text-white rounded-full"
-    disabled={!comment.trim() || isPosting}
-    onClick={async () => {
-      setIsPosting(true)
-      // TODO: Implement post comment logic here
-      // For now, just clear the input after a short delay
-      setTimeout(() => {
-        setComment("")
-        setIsPosting(false)
-        // Optionally, call handleReplyCreated() to refresh replies
-      }, 500)
-    }}
+    disabled={!commentState.text.trim() || isPosting}
+    onClick={handlePostComment}
   >
-    Post
+    {isPosting ? (
+      <Loader2 className="h-4 w-4 animate-spin" />
+    ) : (
+      'Post'
+    )}
   </Button>
 </div>
           {replies.map((reply) => (
