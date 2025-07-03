@@ -5,12 +5,18 @@ import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase/client"
 import { PostCard } from "@/components/dashboard/post-card"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Loader2 } from "lucide-react"
-import { Paperclip } from "lucide-react"
+import { ArrowLeft, Loader2, Paperclip } from "lucide-react"
 import Image from "next/image"
+
 interface PostDetailContentProps {
   postId: string
   userId: string
+}
+
+type CommentState = {
+  text: string
+  replyingTo: string | null // username or null
+  replyParentId: string | null // postId or replyId
 }
 
 export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
@@ -19,17 +25,22 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
   const [currentUser, setCurrentUser] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
-  const [comment, setComment] = useState("")
-  //const [isPosting, setIsPosting] = useState(false)
-  const [isReply , setReplying] = useState()
   const [commentState, setCommentState] = useState<CommentState>({
-  text: '',
-  replyingTo: null
-});
-const [isPosting, setIsPosting] = useState(false);
+    text: '',
+    replyingTo: null,
+    replyParentId: postId // by default, reply to the main post
+  })
+  const [isPosting, setIsPosting] = useState(false)
+
   useEffect(() => {
     fetchCurrentUser()
     fetchPostAndReplies()
+    // Reset comment state when postId changes
+    setCommentState({
+      text: '',
+      replyingTo: null,
+      replyParentId: postId,
+    })
   }, [postId, userId])
 
   const fetchCurrentUser = async () => {
@@ -40,41 +51,36 @@ const [isPosting, setIsPosting] = useState(false);
       console.error("Error fetching current user:", error)
     }
   }
-const handlePostComment = async () => {
-  if (!commentState.text.trim() || isPosting) return;
-  
-  setIsPosting(true);
-  try {
-    // Create the comment data
-    const commentData = {
-      content: commentState.text,
-      user_id: userId,
-      reply_to: postId,
-      //created_at: new Date().toISOString(),
-      //mentioned_user: commentState.replyingTo
-    };
 
-    // Insert the comment into Supabase
-    const { error } = await supabase
-      .from('posts')
-      .insert(commentData);
+  const handlePostComment = async () => {
+    if (!commentState.text.trim() || isPosting) return
 
-    if (error) throw error;
+    setIsPosting(true)
+    try {
+      const commentData = {
+        content: commentState.text,
+        user_id: userId,
+        reply_to: commentState.replyParentId,
+      }
 
-    // Clear the comment state and refresh
-    setCommentState({ text: '', replyingTo: null });
-    handleReplyCreated();
-  } catch (error) {
-    console.error('Error posting comment:', error);
-  } finally {
-    setIsPosting(false);
+      const { error } = await supabase.from('posts').insert(commentData)
+      if (error) throw error
+
+      // Reset comment box and refresh replies
+      setCommentState({ text: '', replyingTo: null, replyParentId: postId })
+      await fetchPostAndReplies()
+    } catch (error) {
+      console.error('Error posting comment:', error)
+    } finally {
+      setIsPosting(false)
+    }
   }
-}
+
   const fetchPostAndReplies = async () => {
     try {
       setIsLoading(true)
 
-      // Fetch main post with profile data
+      // Fetch main post
       const { data: postData, error: postError } = await supabase
         .from("posts")
         .select(`
@@ -85,22 +91,18 @@ const handlePostComment = async () => {
         .single()
 
       if (postError) {
-        console.error("Post fetch error:", postError)
         setPost(null)
         setIsLoading(false)
         return
       }
 
-      // Fetch likes for the post
-      const { data: likesData } = await supabase.from("likes").select("user_id").eq("post_id", postId)
+      // Fetch likes, reposts, replies count
+      const [{ data: likesData }, { data: repostsData }, { data: repliesCount }] = await Promise.all([
+        supabase.from("likes").select("user_id").eq("post_id", postId),
+        supabase.from("reposts").select("user_id").eq("post_id", postId),
+        supabase.from("posts").select("id").eq("reply_to", postId)
+      ])
 
-      // Fetch reposts for the post
-      const { data: repostsData } = await supabase.from("reposts").select("user_id").eq("post_id", postId)
-
-      // Fetch replies count
-      const { data: repliesCount } = await supabase.from("posts").select("id").eq("reply_to", postId)
-
-      // Transform post data
       const transformedPost = {
         ...postData,
         username: postData.profiles?.username || "unknown",
@@ -117,7 +119,7 @@ const handlePostComment = async () => {
 
       setPost(transformedPost)
 
-      // Fetch replies
+      // Fetch replies (top-level only)
       const { data: repliesData, error: repliesError } = await supabase
         .from("posts")
         .select(`
@@ -128,20 +130,17 @@ const handlePostComment = async () => {
         .order("created_at", { ascending: true })
 
       if (repliesError) {
-        console.error("Replies fetch error:", repliesError)
         setReplies([])
         return
       }
 
-      // Transform replies data
+      // For each reply, fetch like/repost counts
       const transformedReplies = await Promise.all(
         (repliesData || []).map(async (reply: any) => {
-          // Fetch likes for each reply
-          const { data: replyLikes } = await supabase.from("likes").select("user_id").eq("post_id", reply.id)
-
-          // Fetch reposts for each reply
-          const { data: replyReposts } = await supabase.from("reposts").select("user_id").eq("post_id", reply.id)
-
+          const [{ data: replyLikes }, { data: replyReposts }] = await Promise.all([
+            supabase.from("likes").select("user_id").eq("post_id", reply.id),
+            supabase.from("reposts").select("user_id").eq("post_id", reply.id),
+          ])
           return {
             ...reply,
             username: reply.profiles?.username || "unknown",
@@ -155,7 +154,7 @@ const handlePostComment = async () => {
             replies_count: 0,
             is_repost: false,
           }
-        }),
+        })
       )
 
       setReplies(transformedReplies)
@@ -167,12 +166,12 @@ const handlePostComment = async () => {
     }
   }
 
-  const handleLike = async (postId: string, isLiked: boolean) => {
+  const handleLike = async (id: string, isLiked: boolean) => {
     try {
       if (isLiked) {
-        await supabase.from("likes").delete().eq("post_id", postId).eq("user_id", userId)
+        await supabase.from("likes").delete().eq("post_id", id).eq("user_id", userId)
       } else {
-        await supabase.from("likes").insert({ post_id: postId, user_id: userId })
+        await supabase.from("likes").insert({ post_id: id, user_id: userId })
       }
       fetchPostAndReplies()
     } catch (error) {
@@ -180,12 +179,12 @@ const handlePostComment = async () => {
     }
   }
 
-  const handleRepost = async (postId: string, isReposted: boolean) => {
+  const handleRepost = async (id: string, isReposted: boolean) => {
     try {
       if (isReposted) {
-        await supabase.from("reposts").delete().eq("post_id", postId).eq("user_id", userId)
+        await supabase.from("reposts").delete().eq("post_id", id).eq("user_id", userId)
       } else {
-        await supabase.from("reposts").insert({ post_id: postId, user_id: userId })
+        await supabase.from("reposts").insert({ post_id: id, user_id: userId })
       }
       fetchPostAndReplies()
     } catch (error) {
@@ -193,12 +192,26 @@ const handlePostComment = async () => {
     }
   }
 
-  const handleReplyCreated = (reply) => {
-    //fetchPostAndReplies()
-    setReplying(reply.id)
-    
+  // Handle clicking "Reply" on a post or reply
+  const handleReplyCreated = (reply?: any) => {
+    if (reply) {
+      // Set reply state to reply to this reply
+      setCommentState({
+        text: '',
+        replyingTo: reply.username,
+        replyParentId: reply.id
+      })
+    } else {
+      // Replying to main post
+      setCommentState({
+        text: '',
+        replyingTo: post.username,
+        replyParentId: postId
+      })
+    }
   }
 
+  // UI rendering
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -219,6 +232,65 @@ const handlePostComment = async () => {
     )
   }
 
+  // Helper: render the reply input box
+  const renderReplyInput = () => (
+    <div className="flex items-center gap-2 px-4 py-3 box-border w-full">
+      {/* Avatar */}
+      {currentUser?.avatar_url ? (
+        <Image
+          src={currentUser.avatar_url}
+          alt={currentUser.display_name || "User"}
+          width={35}
+          height={35}
+          className="rounded-full object-cover"
+        />
+      ) : (
+        <div className="w-10 h-10 rounded-full bg-gray-200" />
+      )}
+
+      {/* Input container */}
+      <div className="flex-1 flex items-center bg-gray-100 rounded-full px-3 py-1">
+        <div className="flex items-center gap-1">
+          <input
+            type="text"
+            value={commentState.text}
+            onChange={e =>
+              setCommentState(prev => ({ ...prev, text: e.target.value }))
+            }
+            placeholder={
+              commentState.replyingTo
+                ? `Replying to @${commentState.replyingTo}...`
+                : "Write a reply..."
+            }
+            className="bg-transparent w-full outline-none px-2 py-1"
+            disabled={isPosting}
+            autoFocus
+          />
+        </div>
+        <button
+          type="button"
+          className="text-gray-400 hover:text-gray-600 flex items-center ml-2"
+          tabIndex={-1}
+          aria-label="Attach file"
+        >
+          <Paperclip className="w-5 h-5" />
+        </button>
+      </div>
+
+      <Button
+        className="bg-gray-800 text-white rounded-full"
+        disabled={!commentState.text.trim() || isPosting}
+        onClick={handlePostComment}
+      >
+        {isPosting ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          'Post'
+        )}
+      </Button>
+    </div>
+  )
+
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-2xl mx-auto border-x">
@@ -228,9 +300,9 @@ const handlePostComment = async () => {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="flex flex-col">
-          <h1 className="text-xl font-bold">{post.display_name}</h1>
-          <small>{replies.length} replies</small>
-            </div>
+            <h1 className="text-xl font-bold">{post.display_name}</h1>
+            <small>{replies.length} replies</small>
+          </div>
         </div>
         {/* Main Post */}
         <PostCard
@@ -239,166 +311,29 @@ const handlePostComment = async () => {
           currentUser={currentUser}
           onLike={handleLike}
           onRepost={handleRepost}
-          onReply={handleReplyCreated}
+          onReply={() => handleReplyCreated()}
         />
-
-        
-      
 
         {/* Replies */}
         <div className="divide-y">
           <h3 className="my-2 px-4">Comments</h3>
-          {/* Comment Box */}
-          {isReply==null ? (
-<div className="flex items-center gap-2 px-4 py-3 box-border w-full">
-  {/* Avatar */}
-  {currentUser?.avatar_url ? (
-    <Image
-      src={currentUser.avatar_url}
-      alt={currentUser.display_name || "User"}
-      width={35}
-      height={35}
-      className="rounded-full object-cover"
-    />
-  ) : (
-    <div className="w-10 h-10 rounded-full bg-gray-200" />
-  )}
-
-  {/* Rounded Input Container */}
-  <div className="flex-1 flex items-center bg-gray-100 rounded-full px-3 py-1">
-    <div className="flex items-center gap-1">
-      {/* Mention Tag */}
-      
-      
-      {/* Input Field */}
-      <input
-        type="text"
-        value={commentState.text}
-        onChange={(e) => setCommentState(prev => ({
-          ...prev,
-          text: e.target.value
-        }))}
-        onFocus={() => {
-          if (!commentState.replyingTo) {
-            setCommentState(prev => ({
-              ...prev,
-              replyingTo: post.username
-            }));
-          }
-        }}
-        placeholder="Write a reply..."
-        className="bg-transparent w-full outline-none px-2 py-1"
-        disabled={isPosting}
-      />
-    </div>
-
-    {/* Attach Icon */}
-    <button
-      type="button"
-      className="text-gray-400 hover:text-gray-600 flex items-center ml-2"
-      tabIndex={-1}
-      aria-label="Attach file"
-    >
-      <Paperclip className="w-5 h-5" />
-    </button>
-  </div>
-
-  {/* Post Button */}
-  <Button
-    className="bg-gray-800 text-white rounded-full"
-    disabled={!commentState.text.trim() || isPosting}
-    onClick={handlePostComment}
-  >
-    {isPosting ? (
-      <Loader2 className="h-4 w-4 animate-spin" />
-    ) : (
-      'Post'
-    )}
-  </Button>
-</div>
-      )}
-          {replies.map((reply) =>(<>
-            <PostCard
-              key={reply.id}
-              post={reply}
-              currentUserId={userId}
-              currentUser={currentUser}
-              onLike={handleLike}
-              onRepost={handleRepost}
-              onReply={()=>handleReplyCreated(reply)}
-            />
-            {isReply && reply.id == isReply ? (
-      <div className="flex items-center gap-2 px-4 py-3 box-border w-full">
-  {/* Avatar */}
-  {currentUser?.avatar_url ? (
-    <Image
-      src={currentUser.avatar_url}
-      alt={currentUser.display_name || "User"}
-      width={35}
-      height={35}
-      className="rounded-full object-cover"
-    />
-  ) : (
-    <div className="w-10 h-10 rounded-full bg-gray-200" />
-  )}
-
-  {/* Rounded Input Container */}
-  <div className="flex-1 flex items-center bg-gray-100 rounded-full px-3 py-1">
-    <div className="flex items-center gap-1">
-      {/* Mention Tag */}
-      
-      
-      {/* Input Field */}
-      <input
-        type="text"
-        value={commentState.text}
-        onChange={(e) => setCommentState(prev => ({
-          ...prev,
-          text: e.target.value
-        }))}
-        onFocus={() => {
-          if (!commentState.replyingTo) {
-            setCommentState(prev => ({
-              ...prev,
-              replyingTo: post.username
-            }));
-          }
-        }}
-        placeholder="Write a reply..."
-        className="bg-transparent w-full outline-none px-2 py-1"
-        disabled={isPosting}
-      />
-    </div>
-
-    {/* Attach Icon */}
-    <button
-      type="button"
-      className="text-gray-400 hover:text-gray-600 flex items-center ml-2"
-      tabIndex={-1}
-      aria-label="Attach file"
-    >
-      <Paperclip className="w-5 h-5" />
-    </button>
-  </div>
-
-  {/* Post Button */}
-  <Button
-    className="bg-gray-800 text-white rounded-full"
-    disabled={!commentState.text.trim() || isPosting}
-    onClick={handlePostComment}
-  >
-    {isPosting ? (
-      <Loader2 className="h-4 w-4 animate-spin" />
-    ) : (
-      'Post'
-    )}
-  </Button>
-</div>
-            ):(<></>)}
-          </>
+          {/* Comment Box: Only show if not replying to a specific reply */}
+          {!commentState.replyingTo && renderReplyInput()}
+          {replies.map(reply => (
+            <div key={reply.id}>
+              <PostCard
+                post={reply}
+                currentUserId={userId}
+                currentUser={currentUser}
+                onLike={handleLike}
+                onRepost={handleRepost}
+                onReply={() => handleReplyCreated(reply)}
+              />
+              {/* Show reply input under the reply if replying to it */}
+              {commentState.replyParentId === reply.id && renderReplyInput()}
+            </div>
           ))}
         </div>
-
         {replies.length === 0 && (
           <div className="text-center py-8 text-gray-500">
             <p>No replies yet. Be the first to reply!</p>
@@ -407,4 +342,4 @@ const handlePostComment = async () => {
       </div>
     </div>
   )
-}
+      }
