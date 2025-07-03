@@ -21,7 +21,7 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
   const router = useRouter()
   const [comment, setComment] = useState("")
   const [isPosting, setIsPosting] = useState(false)
-
+  const [isReply , setReplying] = useState()
   useEffect(() => {
     fetchCurrentUser()
     fetchPostAndReplies()
@@ -191,7 +191,10 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
           <Button variant="ghost" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-xl font-bold">Post</h1>
+          <div className="flex flex-col">
+          <h1 className="text-xl font-bold">{post.display_name}</h1>
+          <small>{replies.length} replies</small>
+            </div>
         </div>
 
         {/* Main Post */}
@@ -227,12 +230,17 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
 
   {/* Rounded Input */}
   <div className="flex-1 flex items-center bg-gray-100 rounded-full px-3 py-1">
+    {isReply!==null ? isReply}
     <input
       type="text"
       value={comment}
       onChange={e => {
-        
-        setComment("@"+post.username+""+e.target.value)}}
+        setReplying(
+          <>
+            <input type="text" disabled className="border-none text-blue-400 outline-none bg-none" value={"@"+post.username}></input>
+          </>
+        )
+        setComment(e.target.value)}}
       placeholder="Write a reply..."
       className="w-full bg-transparent outline-none px-2 py-1"
       disabled={isPosting}
