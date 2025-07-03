@@ -325,7 +325,7 @@ const handlePostComment = async () => {
               currentUser={currentUser}
               onLike={handleLike}
               onRepost={handleRepost}
-              onReply={handleReplyCreated(reply)}
+              onReply={()=>handleReplyCreated(reply)}
             />
             {isReply && reply.id == isReply ? (
       <div className="flex items-center gap-2 px-4 py-3 box-border w-full">
