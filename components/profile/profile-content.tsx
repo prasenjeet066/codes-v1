@@ -388,7 +388,7 @@ export function ProfileContent({ username, currentUserId }: ProfileContentProps)
       await supabase.from("posts").insert({
         repost_of: postId,
         user_id: currentUserId,
-        content: "",
+        content: "NaN",
       })
     }
 
