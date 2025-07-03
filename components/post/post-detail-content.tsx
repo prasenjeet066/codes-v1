@@ -209,16 +209,16 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
 
         {/* Replies */}
         <div className="divide-y">
-          <h3 className="my-2 px-4">All Reply</h3>
+          <h3 className="my-2 px-4">Comments</h3>
           {/* Comment Box */}
-<div className="flex items-center gap-2 px-4 py-3 w-full">
+<div className="flex items-center gap-2 px-4 py-3 box-border">
   {/* Avatar */}
   {currentUser?.avatar_url ? (
     <Image
       src={currentUser.avatar_url}
       alt={currentUser.display_name || "User"}
-      width={40}
-      height={40}
+      width={35}
+      height={35}
       className="rounded-full object-cover"
     />
   ) : (
