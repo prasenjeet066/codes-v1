@@ -50,8 +50,8 @@ const handlePostComment = async () => {
       content: commentState.text,
       user_id: userId,
       reply_to: postId,
-      created_at: new Date().toISOString(),
-      mentioned_user: commentState.replyingTo
+      //created_at: new Date().toISOString(),
+      //mentioned_user: commentState.replyingTo
     };
 
     // Insert the comment into Supabase
