@@ -21,7 +21,7 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
   const router = useRouter()
   const [comment, setComment] = useState("")
   //const [isPosting, setIsPosting] = useState(false)
- // const [isReply , setReplying] = useState()
+  const [isReply , setReplying] = useState()
   const [commentState, setCommentState] = useState<CommentState>({
   text: '',
   replyingTo: null
@@ -193,8 +193,10 @@ const handlePostComment = async () => {
     }
   }
 
-  const handleReplyCreated = () => {
-    fetchPostAndReplies()
+  const handleReplyCreated = (reply) => {
+    //fetchPostAndReplies()
+    setReplying(reply.id)
+    
   }
 
   if (isLoading) {
@@ -230,7 +232,6 @@ const handlePostComment = async () => {
           <small>{replies.length} replies</small>
             </div>
         </div>
-
         {/* Main Post */}
         <PostCard
           post={post}
@@ -248,6 +249,7 @@ const handlePostComment = async () => {
         <div className="divide-y">
           <h3 className="my-2 px-4">Comments</h3>
           {/* Comment Box */}
+          {isReply==null ? (
 <div className="flex items-center gap-2 px-4 py-3 box-border w-full">
   {/* Avatar */}
   {currentUser?.avatar_url ? (
@@ -266,11 +268,7 @@ const handlePostComment = async () => {
   <div className="flex-1 flex items-center bg-gray-100 rounded-full px-3 py-1">
     <div className="flex items-center gap-1">
       {/* Mention Tag */}
-      {commentState.replyingTo && (
-        <span className="text-blue-400 bg-none text-sm">
-          @{commentState.replyingTo}
-        </span>
-      )}
+      
       
       {/* Input Field */}
       <input
@@ -318,7 +316,8 @@ const handlePostComment = async () => {
     )}
   </Button>
 </div>
-          {replies.map((reply) => (
+      )}
+          {replies.map((reply) =>(<>
             <PostCard
               key={reply.id}
               post={reply}
@@ -326,8 +325,77 @@ const handlePostComment = async () => {
               currentUser={currentUser}
               onLike={handleLike}
               onRepost={handleRepost}
-              onReply={handleReplyCreated}
+              onReply={handleReplyCreated(reply)}
             />
+            {isReply && reply.id == isReply ? (
+      <div className="flex items-center gap-2 px-4 py-3 box-border w-full">
+  {/* Avatar */}
+  {currentUser?.avatar_url ? (
+    <Image
+      src={currentUser.avatar_url}
+      alt={currentUser.display_name || "User"}
+      width={35}
+      height={35}
+      className="rounded-full object-cover"
+    />
+  ) : (
+    <div className="w-10 h-10 rounded-full bg-gray-200" />
+  )}
+
+  {/* Rounded Input Container */}
+  <div className="flex-1 flex items-center bg-gray-100 rounded-full px-3 py-1">
+    <div className="flex items-center gap-1">
+      {/* Mention Tag */}
+      
+      
+      {/* Input Field */}
+      <input
+        type="text"
+        value={commentState.text}
+        onChange={(e) => setCommentState(prev => ({
+          ...prev,
+          text: e.target.value
+        }))}
+        onFocus={() => {
+          if (!commentState.replyingTo) {
+            setCommentState(prev => ({
+              ...prev,
+              replyingTo: post.username
+            }));
+          }
+        }}
+        placeholder="Write a reply..."
+        className="bg-transparent w-full outline-none px-2 py-1"
+        disabled={isPosting}
+      />
+    </div>
+
+    {/* Attach Icon */}
+    <button
+      type="button"
+      className="text-gray-400 hover:text-gray-600 flex items-center ml-2"
+      tabIndex={-1}
+      aria-label="Attach file"
+    >
+      <Paperclip className="w-5 h-5" />
+    </button>
+  </div>
+
+  {/* Post Button */}
+  <Button
+    className="bg-gray-800 text-white rounded-full"
+    disabled={!commentState.text.trim() || isPosting}
+    onClick={handlePostComment}
+  >
+    {isPosting ? (
+      <Loader2 className="h-4 w-4 animate-spin" />
+    ) : (
+      'Post'
+    )}
+  </Button>
+</div>
+            ):(<></>)}
+          </>
           ))}
         </div>
 
