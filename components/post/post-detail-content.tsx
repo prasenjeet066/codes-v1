@@ -234,7 +234,7 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
         
         setComment("@"+post.username+""+e.target.value)}}
       placeholder="Write a reply..."
-      className="flex-1 bg-transparent outline-none px-2 py-1"
+      className="w-full bg-transparent outline-none px-2 py-1"
       disabled={isPosting}
     />
     {/* Attach Icon */}
@@ -250,7 +250,7 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
 
   {/* Post Button */}
   <Button
-    className="ml-2 bg-gray-800 text-white rounded-full"
+    className="bg-gray-800 text-white rounded-full"
     disabled={!comment.trim() || isPosting}
     onClick={async () => {
       setIsPosting(true)
