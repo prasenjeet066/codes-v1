@@ -248,7 +248,7 @@ const handlePostComment = async () => {
         <div className="divide-y">
           <h3 className="my-2 px-4">Comments</h3>
           {/* Comment Box */}
-<div className="flex items-center gap-2 px-4 py-3 box-border">
+<div className="flex items-center gap-2 px-4 py-3 box-border w-full">
   {/* Avatar */}
   {currentUser?.avatar_url ? (
     <Image
@@ -264,10 +264,10 @@ const handlePostComment = async () => {
 
   {/* Rounded Input Container */}
   <div className="flex-1 flex items-center bg-gray-100 rounded-full px-3 py-1">
-    <div className="flex flex-1 items-center gap-1">
+    <div className="flex items-center gap-1">
       {/* Mention Tag */}
       {commentState.replyingTo && (
-        <span className="text-blue-400 text-sm">
+        <span className="text-blue-400 bg-none text-sm">
           @{commentState.replyingTo}
         </span>
       )}
@@ -289,7 +289,7 @@ const handlePostComment = async () => {
           }
         }}
         placeholder="Write a reply..."
-        className="flex-1 bg-transparent outline-none px-2 py-1"
+        className="bg-transparent w-full outline-none px-2 py-1"
         disabled={isPosting}
       />
     </div>
