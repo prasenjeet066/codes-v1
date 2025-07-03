@@ -13,6 +13,7 @@ import { Menu, X, UserPlus, UserCheck, Calendar, MapPin, LinkIcon } from "lucide
 import { formatDistanceToNow } from "date-fns"
 import { bn } from "date-fns/locale"
 import Link from "next/link"
+import { ImageViewer } from "@/components/media/image-viewer";
 import { VerificationBadge } from "@/components/badge/verification-badge"
 
 interface ProfileContentProps {
@@ -481,6 +482,8 @@ export function ProfileContent({ username, currentUserId }: ProfileContentProps)
                       {currentProfile?.display_name?.charAt(0)?.toUpperCase() || "ব"}
                     </AvatarFallback>
                   </Avatar>
+                  {currentProfile.avatar_url!==null?
+                  <ImageViewer src={currentProfile.avatar_url}/>}
                 </Link>
               </Button>
             </>
