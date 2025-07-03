@@ -6,7 +6,8 @@ import { supabase } from "@/lib/supabase/client"
 import { PostCard } from "@/components/dashboard/post-card"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Loader2 } from "lucide-react"
-
+import { Paperclip } from "lucide-react"
+import Image from "next/image"
 interface PostDetailContentProps {
   postId: string
   userId: string
@@ -18,6 +19,8 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
   const [currentUser, setCurrentUser] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
+  const [comment, setComment] = useState("")
+  const [isPosting, setIsPosting] = useState(false)
 
   useEffect(() => {
     fetchCurrentUser()
@@ -207,6 +210,60 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
         {/* Replies */}
         <div className="divide-y">
           <h3 className="my-2 px-4">All Reply</h3>
+          {/* Comment Box */}
+<div className="flex items-center gap-2 px-4 py-3">
+  {/* Avatar */}
+  {currentUser?.avatar_url ? (
+    <Image
+      src={currentUser.avatar_url}
+      alt={currentUser.display_name || "User"}
+      width={40}
+      height={40}
+      className="rounded-full object-cover"
+    />
+  ) : (
+    <div className="w-10 h-10 rounded-full bg-gray-200" />
+  )}
+
+  {/* Rounded Input */}
+  <div className="flex-1 flex items-center bg-gray-100 rounded-full px-3 py-1">
+    <input
+      type="text"
+      value={comment}
+      onChange={e => setComment(e.target.value)}
+      placeholder="Write a reply..."
+      className="flex-1 bg-transparent outline-none px-2 py-1"
+      disabled={isPosting}
+    />
+    {/* Attach Icon */}
+    <button
+      type="button"
+      className="text-gray-400 hover:text-gray-600 flex items-center"
+      tabIndex={-1}
+      aria-label="Attach file"
+    >
+      <Paperclip className="w-5 h-5" />
+    </button>
+  </div>
+
+  {/* Post Button */}
+  <Button
+    className="ml-2"
+    disabled={!comment.trim() || isPosting}
+    onClick={async () => {
+      setIsPosting(true)
+      // TODO: Implement post comment logic here
+      // For now, just clear the input after a short delay
+      setTimeout(() => {
+        setComment("")
+        setIsPosting(false)
+        // Optionally, call handleReplyCreated() to refresh replies
+      }, 500)
+    }}
+  >
+    Post
+  </Button>
+</div>
           {replies.map((reply) => (
             <PostCard
               key={reply.id}
