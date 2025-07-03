@@ -78,8 +78,8 @@ export function ProfileContent({ username, currentUserId }: ProfileContentProps)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [activeTab, setActiveTab] = useState("posts")
   const router = useRouter()
-   const [open, setOpen] = useState();
-  
+   //const [open, setOpen] = useState();
+  const [open, setOpen] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -478,7 +478,7 @@ export function ProfileContent({ username, currentUserId }: ProfileContentProps)
               </Button>
               <Button variant="ghost" size="icon" asChild>
                 <Link href={`/profile/${currentProfile?.username}`}>
-                  <Avatar className="h-8 w-8" onClick={(e)=>setOpen(currentProfile?.avatar_url || null)}>
+                  <Avatar className="h-8 w-8" onClick={()=>setOpen(currentProfile.avatar_url || null)}>
                     <AvatarImage src={currentProfile?.avatar_url || undefined} />
                     <AvatarFallback className="text-xs">
                       {currentProfile?.display_name?.charAt(0)?.toUpperCase() || "ব"}
@@ -685,9 +685,10 @@ export function ProfileContent({ username, currentUserId }: ProfileContentProps)
       )}
       {
         open && (<ImageViewer src={open} isOpen={!!open}
-        onClose={() => setOpen(null)}/>)}
-                
+        onClose={() => setOpen(null)}/>)
       }
+                
+      
     </div>
   )
 }
