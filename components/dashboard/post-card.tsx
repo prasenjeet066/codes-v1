@@ -40,7 +40,7 @@ export function PostCard({ post, currentUserId, currentUser, onLike, onRepost, o
   const router = useRouter()
   const postUrl = extractFirstUrl(post.content)
   const hasMedia = post.media_urls && post.media_urls.length > 0
-  const [trans,setTrans] = useEffect(null)
+  const [trans,setTrans] = useState(null)
   const MAX_LENGTH = 300; // You can adjust this
   const pathname = usePathname()
   const isPostPage = pathname.startsWith("/post")
