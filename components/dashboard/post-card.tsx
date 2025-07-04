@@ -35,7 +35,7 @@ export function PostCard({ post, currentUserId, currentUser, onLike, onRepost, o
 
   const postUrl = extractFirstUrl(post.content)
   const hasMedia = post.media_urls && post.media_urls.length > 0
-
+  
   // Format hashtags and mentions with XSS protection
   const formatContent = (content: string) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g
@@ -60,7 +60,7 @@ export function PostCard({ post, currentUserId, currentUser, onLike, onRepost, o
 
   // Reply handler
   const handleReplyClick = () => {
-    setShowReplyDialog(true)
+    router.push(`/post/${post.id}`)
   }
 
   // Direct repost handler (no dialog)
@@ -291,17 +291,7 @@ export function PostCard({ post, currentUserId, currentUser, onLike, onRepost, o
         </div>
       </div>
 
-      {/* Reply Dialog */}
-      <ReplyDialog
-        isOpen={showReplyDialog}
-        onClose={() => setShowReplyDialog(false)}
-        post={post}
-        currentUser={currentUser}
-        onReply={() => {
-          setShowReplyDialog(false)
-          onReply?.()
-        }}
-      />
+      
     </>
   )
 }
