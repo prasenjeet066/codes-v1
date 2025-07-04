@@ -42,12 +42,14 @@ export function PostCard({ post, currentUserId, currentUser, onLike, onRepost, o
   const hasMedia = post.media_urls && post.media_urls.length > 0
   const [trans,setTrans] = useEffect(null)
   const MAX_LENGTH = 300; // You can adjust this
-
-  const isPostPage = usePathname().startsWith("/post");
+  const pathname = usePathname()
+  const isPostPage = pathname.startsWith("/post")
+  //const isPostPage = usePathname().startsWith("/post");
   const shouldTrim = !isPostPage && post.content.length > MAX_LENGTH;
   const halfLength = Math.floor(post.content.length / 2);
   const trimmedContent = post.content.slice(0, halfLength) + '...';
-  // Format hashtags and mentions with XSS protection
+  
+    // Format hashtags and mentions with XSS protection
   const formatContent = (content: string) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g
 
@@ -56,8 +58,6 @@ export function PostCard({ post, currentUserId, currentUser, onLike, onRepost, o
       ALLOWED_TAGS: [],
       ALLOWED_ATTR: [],
     })
-    const pathname = usePathname()
-    const isPostPage = pathname.startsWith("/post")
     
     return sanitizedContent
       .replace(
