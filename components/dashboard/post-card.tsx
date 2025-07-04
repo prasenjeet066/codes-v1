@@ -186,7 +186,8 @@ export function PostCard({ post, currentUserId, currentUser, onLike, onRepost, o
 
   // Click to go to post
   const handlePostClick = () => {
-    window.location.href = `/post/${post.id}`
+    
+    router.push(`/post/${post.id}`)
   }
 
   return (
