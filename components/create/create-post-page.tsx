@@ -384,8 +384,8 @@ export function CreatePostPage({ user }: CreatePostPageProps) {
                 <ArrowLeft className="h-4 w-4" />
               </Button>
               <div>
-                <h1 className="text-lg font-semibold text-gray-900">Create Post</h1>
-                <p className="text-sm text-gray-500">Share what's on your mind</p>
+                <h1 className="text-lg font-semibold text-gray-900">New Post</h1>
+                
               </div>
             </div>
 
@@ -396,7 +396,7 @@ export function CreatePostPage({ user }: CreatePostPageProps) {
               <Button
                 onClick={handlePost}
                 disabled={isPosting || (!content.trim() && totalMediaCount === 0) || isOverLimit}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium px-6"
+                className="rounded-full bg-gray-800 text-white font-medium px-6"
               >
                 {isPosting ? (
                   <>
@@ -414,7 +414,7 @@ export function CreatePostPage({ user }: CreatePostPageProps) {
 
       <div className="max-w-2xl mx-auto p-4 space-y-6">
         {/* Main Compose Card */}
-        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+        <Card className="bg-white/70 backdrop-blur-sm border-0">
           <CardHeader className="pb-4">
             <div className="flex items-start gap-3">
               <Avatar className="h-12 w-12 ring-2 ring-gray-200">
@@ -686,7 +686,7 @@ export function CreatePostPage({ user }: CreatePostPageProps) {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </Card
       </div>
 
       {/* Image Viewer */}
