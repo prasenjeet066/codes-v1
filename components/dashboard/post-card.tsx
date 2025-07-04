@@ -83,7 +83,7 @@ export function PostCard({ post, currentUserId, currentUser, onLike, onRepost, o
   const hasMedia = useMemo(() => post.media_urls && post.media_urls.length > 0, [post.media_urls])
   const isPostPage = useMemo(() => pathname.startsWith("/post"), [pathname])
   
-  const MAX_LENGTH = 300
+  const MAX_LENGTH = 100
   const shouldTrim = !isPostPage && post.content.length > MAX_LENGTH
   const displayContent = shouldTrim ? smartTruncate(post.content, MAX_LENGTH) : post.content
   
