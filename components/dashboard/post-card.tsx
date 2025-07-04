@@ -83,17 +83,16 @@ export function PostCard({ post, currentUserId, currentUser, onLike, onRepost, o
       )
       .replace(/@([a-zA-Z0-9_]+)/g, '<span class="text-blue-600 hover:underline cursor-pointer">@$1</span>')
   }
-  const handlePostTranslate =()=>{
-    const transTo = "bn"
-    // set translated lang text
-    const transText = await translateText(post.content,transTo)
-    post.content = transText;
-    setTrans({
-      transTo:transTo,
-      transFrom:""
-    })
-    
-    
+  
+  const handlePostTranslate = async () => {
+  const transTo = "bn"
+  // set translated lang text
+  const transText = await translateText(post.content, transTo)
+  post.content = transText;
+  setTrans({
+    transTo: transTo,
+    transFrom: ""
+  })
   }
 
   // Reply handler
