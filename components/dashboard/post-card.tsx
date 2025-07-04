@@ -48,7 +48,20 @@ export function PostCard({ post, currentUserId, currentUser, onLike, onRepost, o
   const shouldTrim = !isPostPage && post.content.length > MAX_LENGTH;
   const halfLength = Math.floor(post.content.length / 2);
   const trimmedContent = post.content.slice(0, halfLength) + '...';
-  
+  async function translateText(text: string, targetLang: string = "bn") {
+  const res = await fetch("https://libretranslate.com/translate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      q: text,
+      source: "auto",
+      target: targetLang,
+      format: "text"
+    })
+  });
+  const data = await res.json();
+  return data.translatedText;
+  }
     // Format hashtags and mentions with XSS protection
   const formatContent = (content: string) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g
@@ -71,12 +84,15 @@ export function PostCard({ post, currentUserId, currentUser, onLike, onRepost, o
       .replace(/@([a-zA-Z0-9_]+)/g, '<span class="text-blue-600 hover:underline cursor-pointer">@$1</span>')
   }
   const handlePostTranslate =()=>{
+    const transTo = "bn"
     // set translated lang text
-    post.content = "translated"
+    const transText = await translateText(post.content,transTo)
+    post.content = transText;
     setTrans({
-      transTo:"",
+      transTo:transTo,
       transFrom:""
     })
+    
     
   }
 
