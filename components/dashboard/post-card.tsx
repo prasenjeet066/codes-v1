@@ -186,8 +186,11 @@ export function PostCard({ post, currentUserId, currentUser, onLike, onRepost, o
 
   // Click to go to post
   const handlePostClick = () => {
-    
+    const pathParts = pathname.split("/")
+    const currentPostId = pathParts[1] === "post" && pathParts[2] ? pathParts[2] : null
+    if(currentPostId !== post.id){
     router.push(`/post/${post.id}`)
+    }
   }
 
   return (
@@ -260,11 +263,12 @@ export function PostCard({ post, currentUserId, currentUser, onLike, onRepost, o
   </button>
 )}
               {isPostPage && trans==null && (
-                 <span className="" onClick ={(e)=>{
+                 <span className="text-sm" onClick ={(e)=>{
                    // handle translate 
                    handlePostTranslate()
                  }}>
-                   <Languages className="h-4 w-4"/>
+                   <Languages className="h-3 w-3 text-gray-700"/>
+                   <small>Translate</small>
                  </span>
               )}
               {!hasMedia && postUrl && <LinkPreview url={postUrl} variant="compact" />}
