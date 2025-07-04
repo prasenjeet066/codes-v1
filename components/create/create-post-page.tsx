@@ -668,7 +668,7 @@ export function CreatePostPage({ user }: CreatePostPageProps) {
           </CardContent>
         </Card>
 
-        {/* Pro Tips Card */}
+        {/* Pro Tips Card 
         <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
@@ -686,7 +686,7 @@ export function CreatePostPage({ user }: CreatePostPageProps) {
               </div>
             </div>
           </CardContent>
-        </Card
+        </Card>**/}
       </div>
 
       {/* Image Viewer */}
