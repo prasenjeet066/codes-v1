@@ -201,6 +201,7 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
         replyingTo: reply.username,
         replyParentId: reply.id
       })
+      router.push(`/post/${reply.id}`)
     } else {
       // Replying to main post
       setCommentState({
