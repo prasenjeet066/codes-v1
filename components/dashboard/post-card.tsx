@@ -41,6 +41,12 @@ export function PostCard({ post, currentUserId, currentUser, onLike, onRepost, o
   const postUrl = extractFirstUrl(post.content)
   const hasMedia = post.media_urls && post.media_urls.length > 0
   const [trans,setTrans] = useEffect(null)
+  const MAX_LENGTH = 300; // You can adjust this
+
+  const isPostPage = usePathname().startsWith("/post");
+  const shouldTrim = !isPostPage && post.content.length > MAX_LENGTH;
+  const halfLength = Math.floor(post.content.length / 2);
+  const trimmedContent = post.content.slice(0, halfLength) + '...';
   // Format hashtags and mentions with XSS protection
   const formatContent = (content: string) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g
@@ -241,6 +247,17 @@ export function PostCard({ post, currentUserId, currentUser, onLike, onRepost, o
                   dangerouslySetInnerHTML={{ __html: formatContent(post.content) }}
                 />
               )}
+              {shouldTrim && isPostPage==false && (
+  <button
+    className="text-blue-600 hover:underline text-sm"
+    onClick={e => {
+      e.stopPropagation();
+      router.push(`/post/${post.id}`);
+    }}
+  >
+    Show More
+  </button>
+)}
               {isPostPage && trans==null && (
                  <span className="" onClick ={(e)=>{
                    // handle translate 
