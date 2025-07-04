@@ -12,6 +12,8 @@ import { PostActionsMenu } from "./post-actions-menu"
 import { VerificationBadge } from "@/components/badge/verification-badge"
 import LinkPreview from "@/components/link-preview"
 import DOMPurify from "dompurify"
+import { useRouter } from "next/navigation"
+
 import type { Post } from "@/types/post"
 
 interface PostCardProps {
@@ -32,7 +34,7 @@ function extractFirstUrl(text: string) {
 export function PostCard({ post, currentUserId, currentUser, onLike, onRepost, onReply }: PostCardProps) {
   const [showReplyDialog, setShowReplyDialog] = useState(false)
   const [repostLoading, setRepostLoading] = useState(false)
-
+  const router = useRouter()
   const postUrl = extractFirstUrl(post.content)
   const hasMedia = post.media_urls && post.media_urls.length > 0
   
