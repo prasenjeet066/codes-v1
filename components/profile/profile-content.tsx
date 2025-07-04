@@ -684,7 +684,7 @@ export function ProfileContent({ username, currentUserId }: ProfileContentProps)
         />
       )}
       {
-        open && (<ImageViewer src={open} isOpen={!!open}
+        open!==null && (<ImageViewer src={open} isOpen={open!==null}
         onClose={() => setOpen(null)}/>)
       }
                 
