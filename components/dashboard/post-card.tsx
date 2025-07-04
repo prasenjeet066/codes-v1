@@ -5,14 +5,17 @@ import { formatDistanceToNow } from "date-fns"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { supabase } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
-import { Heart, Loader2, MessageCircle, Repeat2, Share, Pin } from "lucide-react"
+import { Heart, Loader2, MessageCircle, Languages, Repeat2, Share, Pin } from "lucide-react"
 import Link from "next/link"
 import { ReplyDialog } from "./reply-dialog"
 import { PostActionsMenu } from "./post-actions-menu"
 import { VerificationBadge } from "@/components/badge/verification-badge"
 import LinkPreview from "@/components/link-preview"
 import DOMPurify from "dompurify"
-import { useRouter } from "next/navigation"
+import { useRouter,usePathname } from "next/navigation"
+
+
+// Component এর মধ্যে
 
 import type { Post } from "@/types/post"
 
@@ -37,7 +40,7 @@ export function PostCard({ post, currentUserId, currentUser, onLike, onRepost, o
   const router = useRouter()
   const postUrl = extractFirstUrl(post.content)
   const hasMedia = post.media_urls && post.media_urls.length > 0
-  
+  const [trans,setTrans] = useEffect(null)
   // Format hashtags and mentions with XSS protection
   const formatContent = (content: string) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g
@@ -47,7 +50,9 @@ export function PostCard({ post, currentUserId, currentUser, onLike, onRepost, o
       ALLOWED_TAGS: [],
       ALLOWED_ATTR: [],
     })
-
+    const pathname = usePathname()
+    const isPostPage = pathname.startsWith("/post")
+    
     return sanitizedContent
       .replace(
         urlRegex,
@@ -58,6 +63,15 @@ export function PostCard({ post, currentUserId, currentUser, onLike, onRepost, o
         '<span class="text-blue-600 hover:underline cursor-pointer">#$1</span>',
       )
       .replace(/@([a-zA-Z0-9_]+)/g, '<span class="text-blue-600 hover:underline cursor-pointer">@$1</span>')
+  }
+  const handlePostTranslate =()=>{
+    // set translated lang text
+    post.content = "translated"
+    setTrans({
+      transTo:"",
+      transFrom:""
+    })
+    
   }
 
   // Reply handler
@@ -226,6 +240,14 @@ export function PostCard({ post, currentUserId, currentUser, onLike, onRepost, o
                   className="text-gray-900 mt-2 mb-3 whitespace-pre-wrap text-sm lg:text-base leading-relaxed"
                   dangerouslySetInnerHTML={{ __html: formatContent(post.content) }}
                 />
+              )}
+              {isPostPage && trans==null && (
+                 <span className="" onClick ={(e)=>{
+                   // handle translate 
+                   handlePostTranslate()
+                 }}>
+                   <Languages className="h-4 w-4"/>
+                 </span>
               )}
               {!hasMedia && postUrl && <LinkPreview url={postUrl} variant="compact" />}
               {renderMedia(post.media_urls, post.media_type)}
