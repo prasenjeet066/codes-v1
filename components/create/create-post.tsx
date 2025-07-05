@@ -47,7 +47,7 @@ interface User {
   }
 }
 
-export default function CreatePost() {
+export default function CreatePostPage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const contentEditableRef = useRef<HTMLDivElement>(null)
   const giphySearchRef = useRef<HTMLInputElement>(null)
