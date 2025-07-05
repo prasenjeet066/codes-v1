@@ -19,7 +19,20 @@ import {
   Users,
   Lock
 } from "lucide-react"
-
+import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Textarea } from "@/components/ui/textarea"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { Progress } from "@/components/ui/progress"
+import { Separator } from "@/components/ui/separator"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { supabase } from "@/lib/supabase/client"
+import { createPostSchema } from "@/lib/validations/post"
+import { VideoPlayer } from "@/components/media/video-player"
+import { ImageViewer } from "@/components/media/image-viewer"
+import { GiphyPicker } from "@/components/giphy/giphy-picker"
 const MAX_CHARACTERS = 280
 const MAX_MEDIA_FILES = 4
 
@@ -47,7 +60,7 @@ interface User {
   }
 }
 
-export default function CreatePostPage() {
+export default function CreatePostPage({user}) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const contentEditableRef = useRef<HTMLDivElement>(null)
   const giphySearchRef = useRef<HTMLInputElement>(null)
