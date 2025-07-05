@@ -57,7 +57,7 @@ export default function SignInPage() {
     }
   }
  const handleGoogleSignUp = async () => {
-    //setIsLoading(true)
+    setIsLoading(true)
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
@@ -67,14 +67,14 @@ export default function SignInPage() {
       })
 
       if (error) {
-       // setErrors("Google দিয়ে সাইন আপ করতে সমস্যা হয়েছে")
+        setMessage("Google দিয়ে সাইন আপ করতে সমস্যা হয়েছে")
         //setMessageT("error")
       }
     } catch (error) {
-     // setErrors("Google দিয়ে সাইন আপ করতে সমস্যা হয়েছে")
+     setMessage("Google দিয়ে সাইন আপ করতে সমস্যা হয়েছে")
      // setMessageType("error")
     } finally {
-      //setIsLoading(false)
+      setIsLoading(false)
     }
     }
   const handleChange = (field: keyof SignInData) => (e: React.ChangeEvent<HTMLInputElement>) => {
