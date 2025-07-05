@@ -445,7 +445,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
             <AvatarFallback>{"+"}</AvatarFallback>
           </Avatar>
           <div>
-            <span className="font-semibold text-lg">{user.dispaly_name}</span>
+            <span className="font-semibold text-lg">{user.display_name}</span>
             <span className="text-sm text-gray-700">@{user.username}</span>
           </div>
         </div>
