@@ -345,7 +345,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
       setContent(contentEditableRef.current.textContent || "");
     }
   };
-
+/*
 
   const handlePost = async () => {
     if (!content.trim() && totalMediaCount === 0) {
@@ -422,7 +422,104 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
     } finally {
       setIsPosting(false)
     }
-  }
+  }*/
+
+  const handlePost = async () => {
+    if (!content.trim() && totalMediaCount === 0) {
+      setError("Please add some content or media to your post.")
+      return
+    }
+
+    if (isOverLimit) {
+      setError(`Please keep your post under ${MAX_CHARACTERS} characters.`)
+      return
+    }
+
+    setIsPosting(true)
+    setError("")
+
+    try {
+      const validatedData = createPostSchema.parse({ content })
+
+      // Check if any media is still uploading
+      const hasUploadingMedia = mediaFiles.some((media) => media.uploading)
+      if (hasUploadingMedia) {
+        setError("Please wait for media uploads to complete")
+        return
+      }
+
+      // Extract hashtags from content
+      const hashtags = content.match(/#[a-zA-Z0-9_\u0980-\u09FF]+/g) || []
+
+      // Prepare media URLs (combine uploaded files and Giphy media)
+      const uploadedMediaUrls = mediaFiles.filter((media) => !media.uploading).map((media) => media.preview)
+      const giphyUrls = giphyMedia.map((gif) => gif.url)
+      const allMediaUrls = [...uploadedMediaUrls, ...giphyUrls]
+
+      // Determine media type
+      let mediaType = null
+      if (allMediaUrls.length > 0) {
+        if (mediaFiles.some((media) => media.type === "video")) {
+          mediaType = "video"
+        } else if (giphyMedia.length > 0) {
+          mediaType = "gif"
+        } else {
+          mediaType = "image"
+        }
+      }
+
+      const { data: postData, error: postError } = await supabase
+        .from("posts")
+        .insert({
+          user_id: user.id,
+          content: validatedData.content,
+          media_urls: allMediaUrls.length > 0 ? allMediaUrls : null,
+          media_type: mediaType,
+        })
+        .select()
+        .single()
+
+      if (postError) {
+        console.error("Post creation error:", postError)
+        setError(postError.message)
+        return
+      }
+
+      // Process hashtags
+      for (const hashtag of hashtags) {
+        const tagName = hashtag.slice(1) // Remove # symbol
+        try {
+          const { data: hashtagData, error: hashtagError } = await supabase
+            .from("hashtags")
+            .upsert({ name: tagName }, { onConflict: "name" })
+            .select()
+            .single()
+
+          if (!hashtagError && hashtagData) {
+            await supabase.from("post_hashtags").insert({ post_id: postData.id, hashtag_id: hashtagData.id })
+          }
+        } catch (hashtagErr) {
+          console.error(`Error processing hashtag ${tagName}:`, hashtagErr)
+          // Don't fail the entire post for hashtag errors
+        }
+      }
+
+      // Clean up blob URLs
+      mediaFiles.forEach((media) => {
+        if (media.preview.startsWith("blob:")) {
+          URL.revokeObjectURL(media.preview)
+        }
+      })
+
+      // Redirect to dashboard
+      //router.push("/dashboard")
+    } catch (err: any) {
+      console.error("Post submission error:", err)
+      setError(err.message || "An error occurred while submitting the post.")
+    } finally {
+      setIsPosting(false)
+    }
+          }
 
   const handleEnhanceText = async () => {
     if (!content.trim()) {
