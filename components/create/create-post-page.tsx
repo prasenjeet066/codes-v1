@@ -1,5 +1,6 @@
 "use client"
-
+import { supabase } from "@/lib/supabase/client"
+import { createPostSchema } from "@/lib/validations/post"
 import { useState, useRef, useCallback, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
@@ -256,7 +257,6 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
         contentEditableRef.current.textContent = ''; // Clear the content editable div
         contentEditableRef.current.classList.add('placeholder-shown'); // Show placeholder
       }
-
     } catch (err: any) {
       console.error("Post submission error (simulated):", err)
       setError(err.message || "An error occurred while submitting the post.")
