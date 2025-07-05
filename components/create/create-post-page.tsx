@@ -242,8 +242,42 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
       console.log("Post content:", content);
       console.log("Media files:", mediaFiles.map(m => m.preview));
       console.log("Giphy media:", giphyMedia.map(g => g.url));
+      const { data: postData, error: postError } = await supabase
+        .from("posts")
+        .insert({
+          user_id: user.id,
+          content: content,
+          //media_urls: allMediaUrls.length > 0 ? allMediaUrls : null,
+         // media_type: mediaType,
+        })
+        .select()
+        .single()
 
-      alert("Post simulated successfully!");
+      if (postError) {
+        console.error("Post creation error:", postError)
+        setError(postError.message)
+        return
+      }
+/**
+      // Process hashtags
+      for (const hashtag of hashtags) {
+        const tagName = hashtag.slice(1) // Remove # symbol
+        try {
+          const { data: hashtagData, error: hashtagError } = await supabase
+            .from("hashtags")
+            .upsert({ name: tagName }, { onConflict: "name" })
+            .select()
+            .single()
+
+          if (!hashtagError && hashtagData) {
+            await supabase.from("post_hashtags").insert({ post_id: postData.id, hashtag_id: hashtagData.id })
+          }
+        } catch (hashtagErr) {
+          console.error(`Error processing hashtag ${tagName}:`, hashtagErr)
+          // Don't fail the entire post for hashtag errors
+        }**/
+                  }
+      //alert("Post simulated successfully!");
 
       mediaFiles.forEach((media) => {
         if (media.preview.startsWith("blob:")) {
