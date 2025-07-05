@@ -17,6 +17,7 @@ import {
   Smile,
   Hash,
   AtSign,
+  CircleCheck,
   X,
   Loader2,
   Sparkles,
@@ -190,7 +191,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
           try {
             const fileExt = file.name.split(".").pop()?.toLowerCase()
             const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
-            const filePath = `posts/${user.id}/${fileName}`
+            const filePath = `posts/${userx.id}/${fileName}`
 
             const { data, error: uploadError } = await supabase.storage.from("post-media").upload(filePath, file, {
               cacheControl: "3600",
@@ -732,8 +733,8 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
         </div>
       </div>
       {isPosted && (
-      <div className="w-full p-2 bg-gray-50 flex flex-row items-center">
-        <Smile className="h-3 w-3 text-gray-800" />
+      <div className="w-full p-2 bg-gray-50 gap-2 flex flex-row items-center">
+        <CircleCheck className="h-3 w-3 text-gray-800" />
         <small>You're post successfully published! <a href="/dashboard">View Post</a></small>
       </div>)
       }
