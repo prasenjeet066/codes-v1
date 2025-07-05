@@ -59,8 +59,10 @@ interface User {
     avatar_url: string | null
   }
 }
-
-export default function CreatePostPage({user}) {
+interface CreatePostPageProps {
+  user: any
+}
+export default function CreatePostPage({user}:CreatePostPageProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const contentEditableRef = useRef<HTMLDivElement>(null)
   const giphySearchRef = useRef<HTMLInputElement>(null)
