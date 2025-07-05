@@ -95,7 +95,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
   }, [])
 
   // Search when search term changes
-  useEffect(() => {
+ /* useEffect(() => {
     if (searchTerm.trim()) {
       const debounceTimer = setTimeout(() => {
        // searchMedia(searchTerm)
@@ -104,7 +104,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
     } else {
       fetchTrending()
     }
-  }, [searchTerm])
+  }, [searchTerm])*/
 
   const fetchTrending = async () => {
     //setIsLoading(true)
@@ -120,7 +120,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
       const stickersData = await stickersResponse.json()
 
       setGifs(gifsData.data || [])
-      setStickers(stickersData.data || [])
+      //setStickers(stickersData.data || [])
     } catch (error) {
       console.error("Error fetching trending media:", error)
     } finally {
