@@ -441,11 +441,12 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
         {/* User Info */}
         <div className="flex items-center gap-3 mb-4">
           <Avatar className="h-12 w-12">
-            <AvatarImage src={user?.user_metadata?.avatar_url || "https://placehold.co/48x48/aabbcc/ffffff?text=U"} />
-            <AvatarFallback>{user?.user_metadata?.full_name?.charAt(0) || "U"}</AvatarFallback>
+            <AvatarImage src={user?.avatar_url || "https://placehold.co/48x48/aabbcc/ffffff?text=U"} />
+            <AvatarFallback>{user?.full_name.charAt(0) || "U"}</AvatarFallback>
           </Avatar>
           <div>
-            <span className="font-semibold text-lg">{user?.user_metadata?.full_name || "Martin Kenter"}</span>
+            <span className="font-semibold text-lg">{user.full_name}</span>
+            <span className="text-sm text-gray-700">@{user.username}</span>
           </div>
         </div>
 
@@ -594,17 +595,17 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
               return (
                 <Card
                   key={index}
-                  className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors shadow-none border"
+                  className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors shadow-none"
                   onClick={option.onClick}
                   tabIndex={option.disabled ? -1 : 0}
                   aria-disabled={option.disabled}
                   style={option.disabled ? { opacity: 0.6, cursor: 'not-allowed' } : {}}
                 >
                   <div className="flex items-center gap-3">
-                    <Icon className="h-6 w-6 text-blue-500" />
+                    <Icon className="h-4 w-4 text-gary-800" />
                     <span className="font-medium text-gray-800">{option.label}</span>
                   </div>
-                  <Plus className="h-5 w-5 text-gray-400" />
+                  
                 </Card>
               );
             })}
