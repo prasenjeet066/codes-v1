@@ -35,7 +35,8 @@ import {
 
 const MAX_CHARACTERS = 280
 const MAX_MEDIA_FILES = 4
-
+const GIPHY_API_KEY = "j5e65Yg6H9qAOCKrZYyJr9Odyo9oGY9L"
+const GIPHY_BASE_URL = "https://api.giphy.com/v1"
 interface CreatePostPageProps {
   user:any
 }
@@ -61,6 +62,8 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
   const [content, setContent] = useState("")
   const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([])
   const [giphyMedia, setGiphyMedia] = useState<GiphyMedia[]>([])
+  const [gifs,setGifs] = useState();
+  
   const [isPosting, setIsPosting] = useState(false)
   const [isUploadingMedia, setIsUploadingMedia] = useState(false)
   const [error, setError] = useState("")
@@ -87,7 +90,43 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
     if (progressPercentage < 90) return "bg-yellow-500"
     return "bg-red-500"
   }
+  useEffect(() => {
+    fetchTrending()
+  }, [])
 
+  // Search when search term changes
+  useEffect(() => {
+    if (searchTerm.trim()) {
+      const debounceTimer = setTimeout(() => {
+       // searchMedia(searchTerm)
+      }, 500)
+      return () => clearTimeout(debounceTimer)
+    } else {
+      fetchTrending()
+    }
+  }, [searchTerm])
+
+  const fetchTrending = async () => {
+    //setIsLoading(true)
+    try {
+      // Fetch trending GIFs
+      const gifsResponse = await fetch(`${GIPHY_BASE_URL}/gifs/trending?api_key=${GIPHY_API_KEY}&limit=20&rating=g`)
+      const gifsData = await gifsResponse.json()
+
+      // Fetch trending stickers
+      const stickersResponse = await fetch(
+        `${GIPHY_BASE_URL}/stickers/trending?api_key=${GIPHY_API_KEY}&limit=20&rating=g`,
+      )
+      const stickersData = await stickersResponse.json()
+
+      setGifs(gifsData.data || [])
+      setStickers(stickersData.data || [])
+    } catch (error) {
+      console.error("Error fetching trending media:", error)
+    } finally {
+     // setIsLoading(false)
+    }
+        }
   const validateMediaFile = (file: File): string | null => {
     const maxSize = 50 * 1024 * 1024 // 50MB
     const allowedImageTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"]
@@ -900,14 +939,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
             </CardHeader>
             <CardContent className="pt-2 p-4">
               <div className="grid grid-cols-2 gap-2 max-h-96 overflow-y-auto">
-                {[
-                  { id: "1", url: "https://media.giphy.com/media/l0HlFZ3c4NrfJia0/giphy.gif" },
-                  { id: "2", url: "https://media.giphy.com/media/3o7bu3hILy6Fv0f1U/giphy.gif" },
-                  { id: "3", url: "https://media.giphy.com/media/l0HlKx25x2Jv0/giphy.gif" },
-                  { id: "4", url: "https://media.giphy.com/media/3o7bu3hILy6Fv0f1U/giphy.gif" },
-                  { id: "5", url: "https://media.giphy.com/media/l0HlKx25x2Jv0/giphy.gif" },
-                  { id: "6", url: "https://media.giphy.com/media/l0HlFZ3c4NrfJia0/giphy.gif" },
-                ].map((gif) => (
+        {gifs.map((gif) => (
                   <div key={gif.id} className="relative aspect-video rounded-lg overflow-hidden cursor-pointer"
                     onClick={() => handleGiphySelect(gif, "gif")}>
                     <img src={gif.url} alt="Giphy" className="w-full h-full object-cover" />
