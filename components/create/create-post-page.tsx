@@ -65,7 +65,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
   const [error, setError] = useState("")
   const [showGiphyPicker, setShowGiphyPicker] = useState(false)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
-  console.log(user);
+  user = user.user_metadata;
   const [isEnhancingText, setIsEnhancingText] = useState(false);
   const [enhancedTextSuggestion, setEnhancedTextSuggestion] = useState<string | null>(null);
   const [showEnhanceModal, setShowEnhanceModal] = useState(false);
@@ -441,11 +441,11 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
         {/* User Info */}
         <div className="flex items-center gap-3 mb-4">
           <Avatar className="h-12 w-12">
-            <AvatarImage src={user?.avatar_url || "https://placehold.co/48x48/aabbcc/ffffff?text=U"} />
-            <AvatarFallback>{user?.full_name.charAt(0) || "U"}</AvatarFallback>
+            <AvatarImage src={"https://placehold.co/48x48/aabbcc/ffffff?text=U"} />
+            <AvatarFallback>{"+"}</AvatarFallback>
           </Avatar>
           <div>
-            <span className="font-semibold text-lg">{user.full_name}</span>
+            <span className="font-semibold text-lg">{user.dispaly_name}</span>
             <span className="text-sm text-gray-700">@{user.username}</span>
           </div>
         </div>
