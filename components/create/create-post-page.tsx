@@ -103,7 +103,131 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
 
     return null
   }
+  const handleMediaUpload = useCallback(
+    async (files: FileList) => {
+      if (files.length === 0) return
 
+      // Validate files first
+      const validationErrors: string[] = []
+      const validFiles: File[] = []
+
+      Array.from(files).forEach((file, index) => {
+        const error = validateMediaFile(file)
+        if (error) {
+          validationErrors.push(`File ${index + 1}: ${error}`)
+        } else {
+          validFiles.push(file)
+        }
+      })
+
+      if (validationErrors.length > 0) {
+        setError(validationErrors.join("; "))
+        return
+      }
+
+      if (totalMediaCount + validFiles.length > MAX_MEDIA_FILES) {
+        setError("You can only upload up to 4 media files")
+        return
+      }
+
+      setIsUploadingMedia(true)
+      setError("")
+
+      try {
+        // Create preview URLs first
+        const newMediaFiles: MediaFile[] = validFiles.map((file) => ({
+          id: Math.random().toString(36).substr(2, 9),
+          file,
+          preview: URL.createObjectURL(file),
+          type: file.type.startsWith("video/") ? "video" : "image",
+          uploading: true,
+        }))
+
+        // Update state immediately for better UX
+        setMediaFiles((prev) => [...prev, ...newMediaFiles])
+
+        // Upload files to Supabase storage
+        const uploadPromises = validFiles.map(async (file, index) => {
+          try {
+            const fileExt = file.name.split(".").pop()?.toLowerCase()
+            const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+            const filePath = `posts/${user.id}/${fileName}`
+
+            const { data, error: uploadError } = await supabase.storage.from("post-media").upload(filePath, file, {
+              cacheControl: "3600",
+              upsert: false,
+            })
+
+            if (uploadError) {
+              throw new Error(`Failed to upload ${file.name}: ${uploadError.message}`)
+            }
+
+            // Get public URL
+            const { data: urlData } = supabase.storage.from("post-media").getPublicUrl(filePath)
+
+            if (!urlData?.publicUrl) {
+              throw new Error(`Failed to get public URL for ${file.name}`)
+            }
+
+            return {
+              originalIndex: mediaFiles.length + index,
+              publicUrl: urlData.publicUrl,
+            }
+          } catch (err) {
+            console.error(`Error processing file ${file.name}:`, err)
+            throw err
+          }
+        })
+
+        const uploadResults = await Promise.allSettled(uploadPromises)
+
+        // Update URLs with actual Supabase URLs
+        setMediaFiles((prev) => {
+          const updated = [...prev]
+          uploadResults.forEach((result, index) => {
+            if (result.status === "fulfilled") {
+              const targetIndex = result.value.originalIndex
+              if (updated[targetIndex]) {
+                // Clean up blob URL
+                URL.revokeObjectURL(updated[targetIndex].preview)
+                updated[targetIndex].preview = result.value.publicUrl
+                updated[targetIndex].uploading = false
+              }
+            }
+          })
+          return updated
+        })
+
+        // Check for any failed uploads
+        const failedUploads = uploadResults.filter((result) => result.status === "rejected")
+        if (failedUploads.length > 0) {
+          const errorMessages = failedUploads.map((result, index) => `File ${index + 1}: ${result.reason}`)
+          setError(`Some uploads failed: ${errorMessages.join("; ")}`)
+        }
+      } catch (err: any) {
+        console.error("Media upload error:", err)
+        setError(err.message || "Failed to upload media. Please try again.")
+
+        // Clean up any blob URLs on error
+        mediaFiles.forEach((media) => {
+          if (media.preview.startsWith("blob:")) {
+            URL.revokeObjectURL(media.preview)
+          }
+        })
+
+        // Reset media files on error
+        setMediaFiles([])
+      } finally {
+        setIsUploadingMedia(false)
+        // Reset file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = ""
+        }
+      }
+    },
+    [mediaFiles.length, totalMediaCount, user.id],
+  )
+/**
   const handleMediaUpload = useCallback(
     async (files: FileList) => {
       if (files.length === 0) return
@@ -168,6 +292,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
     },
     [totalMediaCount, mediaFiles],
   )
+  **/
 
   const removeMediaFile = (id: string) => {
     setMediaFiles((prev) => {
