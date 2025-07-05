@@ -65,7 +65,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
   const [error, setError] = useState("")
   const [showGiphyPicker, setShowGiphyPicker] = useState(false)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
-
+  console.log(user);
   const [isEnhancingText, setIsEnhancingText] = useState(false);
   const [enhancedTextSuggestion, setEnhancedTextSuggestion] = useState<string | null>(null);
   const [showEnhanceModal, setShowEnhanceModal] = useState(false);
