@@ -62,7 +62,7 @@ interface User {
 interface CreatePostPageProps {
   user: any
 }
-export default function CreatePostPage({user}) {
+export default function CreatePostPage({user}:CreatePostPageProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const contentEditableRef = useRef<HTMLDivElement>(null)
   const giphySearchRef = useRef<HTMLInputElement>(null)
@@ -83,14 +83,7 @@ export default function CreatePostPage({user}) {
   const progressPercentage = (characterCount / MAX_CHARACTERS) * 100
   const totalMediaCount = mediaFiles.length + giphyMedia.length
 
-  const user: User = {
-    id: "1",
-    user_metadata: {
-      full_name: "Martin Kenter",
-      username: "martinkenter",
-      avatar_url: null
-    }
-  }
+   
 
   const postOptions = [
     { 
@@ -383,13 +376,13 @@ export default function CreatePostPage({user}) {
         <div className="flex items-start space-x-3 mb-4">
           <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center">
             <span className="text-gray-600 font-medium text-base" aria-hidden="true">
-              {user.user_metadata.full_name.split(' ').map(n => n[0]).join('')}
+              {user.display_name.split(' ').map(n => n[0]).join('')}
             </span>
           </div>
           <div className="flex-1">
             <div className="flex items-center space-x-2 mb-2">
               <span className="font-medium text-gray-900 text-base">
-                {user.user_metadata.full_name}
+                {user.display_name}
               </span>
               <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
                 <span className="text-white text-xs" aria-label="Verified user">✓</span>
