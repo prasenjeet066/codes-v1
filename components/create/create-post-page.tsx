@@ -66,7 +66,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
   const [error, setError] = useState("")
   const [showGiphyPicker, setShowGiphyPicker] = useState(false)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
-  user = user.user_metadata;
+  const userx = user.user_metadata;
   const [isEnhancingText, setIsEnhancingText] = useState(false);
   const [enhancedTextSuggestion, setEnhancedTextSuggestion] = useState<string | null>(null);
   const [showEnhanceModal, setShowEnhanceModal] = useState(false);
@@ -700,8 +700,8 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
             <AvatarFallback>{"+"}</AvatarFallback>
           </Avatar>
           <div>
-            <span className="font-semibold text-lg">{user.display_name}</span>
-            <span className="text-sm text-gray-700">@{user.username}</span>
+            <span className="font-semibold text-lg">{userx.display_name}</span>
+            <span className="text-sm text-gray-700">@{userx.username}</span>
           </div>
         </div>
 
