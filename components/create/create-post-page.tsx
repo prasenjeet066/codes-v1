@@ -383,7 +383,6 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
         setError(postError.message)
         return
       }
-/**
       // Process hashtags
       for (const hashtag of hashtags) {
         const tagName = hashtag.slice(1) // Remove # symbol
@@ -400,7 +399,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
         } catch (hashtagErr) {
           console.error(`Error processing hashtag ${tagName}:`, hashtagErr)
           // Don't fail the entire post for hashtag errors
-        }**/
+        }
                   }
       //alert("Post simulated successfully!");
 
