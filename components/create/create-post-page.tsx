@@ -376,13 +376,13 @@ export default function CreatePostPage({user}:CreatePostPageProps) {
         <div className="flex items-start space-x-3 mb-4">
           <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center">
             <span className="text-gray-600 font-medium text-base" aria-hidden="true">
-              {user.display_name.split(' ').map(n => n[0]).join('')}
+              {"Prasenjeet".split(' ').map(n => n[0]).join('')}
             </span>
           </div>
           <div className="flex-1">
             <div className="flex items-center space-x-2 mb-2">
               <span className="font-medium text-gray-900 text-base">
-                {user.display_name}
+                {"Prasenjeet"}
               </span>
               <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
                 <span className="text-white text-xs" aria-label="Verified user">✓</span>
@@ -607,7 +607,7 @@ export default function CreatePostPage({user}:CreatePostPageProps) {
                   )}
                 </button>
                 <button
-                  onClick={() => setShowGiphyPicker(!showGiphyPicker)}
+                  
                   className="p-2 text-yellow-600 hover:bg-yellow-50 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
                   disabled={totalMediaCount >= MAX_MEDIA_FILES || isPosting}
                   aria-label={showGiphyPicker ? "Close GIF picker" : "Open GIF picker"}
