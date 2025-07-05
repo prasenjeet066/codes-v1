@@ -73,7 +73,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
   const [isEnhancingText, setIsEnhancingText] = useState(false);
   const [enhancedTextSuggestion, setEnhancedTextSuggestion] = useState<string | null>(null);
   const [showEnhanceModal, setShowEnhanceModal] = useState(false);
-
+  const [isPosted, setIsPosted] = useState(false)
   // New state for showing/hiding "Add to your post" options
   const [showAddOptions, setShowAddOptions] = useState(false);
 
@@ -555,6 +555,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
       console.error("Post submission error:", err)
       setError(err.message || "An error occurred while submitting the post.")
     } finally {
+      setIsPosted(true)
       setIsPosting(false)
     }
           }
@@ -730,7 +731,12 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
           </Button>
         </div>
       </div>
-
+      {isPosted && (
+      <div className="w-full p-2 bg-gray-50 flex flex-row items-center">
+        <Smile className="h-3 w-3 text-gray-800" />
+        <small>You're post successfully published! <a href="/dashboard">View Post</a></small>
+      </div>)
+      }
       <div className="max-w-2xl mx-auto p-4">
         {/* User Info */}
         <div className="flex items-center gap-3 mb-4">
