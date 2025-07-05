@@ -515,6 +515,28 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
           </div>
         </div>
 
+        {/* Media Previews 
+        {(mediaFiles.length > 0 || giphyMedia.length > 0) && (
+          <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {mediaFiles.map((media) => (
+              <div key={media.id} className="relative aspect-video rounded-lg overflow-hidden border border-gray-200">
+                {media.type === "image" ? (
+                  <img src={media.preview} alt="Media preview" className="w-full h-full object-cover" />
+                ) : (
+                  <video src={media.preview} controls className="w-full h-full object-cover" />
+                )}
+                {media.uploading && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white">
+                    <Loader2 className="h-8 w-8 animate-spin" />
+                  </div>
+                )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-1 right-1 bg-black bg-opacity-50 text-white rounded-full h-6 w-6"
+                  onClick={() => removeMediaFile(media.id)}
+                  disabled={media.uploading}
+                  */}
         {/* Media Previews */}
         {(mediaFiles.length > 0 || giphyMedia.length > 0) && (
           <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -536,4 +558,135 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
                   className="absolute top-1 right-1 bg-black bg-opacity-50 text-white rounded-full h-6 w-6"
                   onClick={() => removeMediaFile(media.id)}
                   disabled={media.uploading}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+            {giphyMedia.map((gif, index) => (
+              <div key={gif.id} className="relative aspect-video rounded-lg overflow-hidden border border-gray-200">
+                <img src={gif.url} alt="Giphy media" className="w-full h-full object-cover" />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-1 right-1 bg-black bg-opacity-50 text-white rounded-full h-6 w-6"
+                  onClick={() => removeGiphyMedia(index)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+        {/* Add to your post section */}
+        <Separator className="my-6" />
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold">Add to your post</h2>
+          <Button variant="ghost" size="icon" onClick={() => setShowAddOptions(!showAddOptions)}>
+            {showAddOptions ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+          </Button>
+        </div>
+
+        {showAddOptions && (
+          <div className="grid grid-cols-2 gap-4">
+            {featureOptions.map((option, index) => {
+              const Icon = option.icon;
+              return (
+                <Card
+                  key={index}
+                  className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors shadow-none border"
+                  onClick={option.onClick}
+                  tabIndex={option.disabled ? -1 : 0}
+                  aria-disabled={option.disabled}
+                  style={option.disabled ? { opacity: 0.6, cursor: 'not-allowed' } : {}}
+                >
+                  <div className="flex items-center gap-3">
+                    <Icon className="h-6 w-6 text-blue-500" />
+                    <span className="font-medium text-gray-800">{option.label}</span>
+                  </div>
+                  <Plus className="h-5 w-5 text-gray-400" />
+                </Card>
+              );
+            })}
+          </div>
+        )}
+
+        {error && (
+          <Alert variant="destructive" className="mt-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+      </div>
+
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*,video/*"
+        multiple
+        className="hidden"
+        onChange={(e) => {
+          if (e.target.files && e.target.files.length > 0) {
+            handleMediaUpload(e.target.files)
+          }
+        }}
+      />
+                          {/* Simplified Giphy Picker Modal (for UI only) */}
+      {showGiphyPicker && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+          <Card className="w-full max-w-lg shadow-none border">
+            <CardHeader className="flex flex-row items-center justify-between pb-2 p-4">
+              <h2 className="text-lg font-semibold">Select a GIF or Sticker</h2>
+              <Button variant="ghost" size="icon" onClick={() => setShowGiphyPicker(false)}>
+                <X className="h-5 w-5" />
+              </Button>
+            </CardHeader>
+            <CardContent className="pt-2 p-4">
+              <div className="grid grid-cols-2 gap-2 max-h-96 overflow-y-auto">
+                {[
+                  { id: "1", url: "https://media.giphy.com/media/l0HlFZ3c4NrfJia0/giphy.gif" },
+                  { id: "2", url: "https://media.giphy.com/media/3o7bu3hILy6Fv0f1U/giphy.gif" },
+                  { id: "3", url: "https://media.giphy.com/media/l0HlKx25x2Jv0/giphy.gif" },
+                  { id: "4", url: "https://media.giphy.com/media/3o7bu3hILy6Fv0f1U/giphy.gif" },
+                  { id: "5", url: "https://media.giphy.com/media/l0HlKx25x2Jv0/giphy.gif" },
+                  { id: "6", url: "https://media.giphy.com/media/l0HlFZ3c4NrfJia0/giphy.gif" },
+                ].map((gif) => (
+                  <div key={gif.id} className="relative aspect-video rounded-lg overflow-hidden cursor-pointer"
+                    onClick={() => handleGiphySelect(gif, "gif")}>
+                    <img src={gif.url} alt="Giphy" className="w-full h-full object-cover" />
+                  </div>
+                ))}
+              </div>
+              <p className="text-sm text-gray-500 mt-4">
+                This is a simplified Giphy picker for UI demonstration. In a real app, this would fetch from the Giphy API.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Enhance Text Suggestion Modal */}
+      {showEnhanceModal && enhancedTextSuggestion && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+          <Card className="w-full max-w-lg shadow-none border">
+            <CardHeader className="flex flex-row items-center justify-between pb-2 p-4">
+              <h2 className="text-lg font-semibold">✨ Text Enhancement Suggestion</h2>
+              <Button variant="ghost" size="icon" onClick={() => setShowEnhanceModal(false)}>
+                <X className="h-5 w-5" />
+              </Button>
+            </CardHeader>
+            <CardContent className="pt-2 p-4">
+              <p className="text-gray-700 mb-4">{enhancedTextSuggestion}</p>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setShowEnhanceModal(false)}>Cancel</Button>
+                <Button onClick={useEnhancedSuggestion}>Use Suggestion</Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+    </div>
+  )
+              }
             
