@@ -36,14 +36,7 @@ const MAX_CHARACTERS = 280
 const MAX_MEDIA_FILES = 4
 
 interface CreatePostPageProps {
-  user: {
-    id: string;
-    user_metadata: {
-      avatar_url?: string;
-      full_name?: string;
-      username?: string;
-    };
-  };
+  user:any
 }
 
 interface MediaFile {
