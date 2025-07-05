@@ -62,7 +62,7 @@ interface User {
 interface CreatePostPageProps {
   user: any
 }
-export default function CreatePostPage({user}:CreatePostPageProps) {
+export default function CreatePostPage({user}) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const contentEditableRef = useRef<HTMLDivElement>(null)
   const giphySearchRef = useRef<HTMLInputElement>(null)
