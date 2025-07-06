@@ -75,6 +75,11 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
   const [enhancedTextSuggestion, setEnhancedTextSuggestion] = useState<string | null>(null);
   const [showEnhanceModal, setShowEnhanceModal] = useState(false);
   const [isPosted, setIsPosted] = useState(false)
+  // Poll System States
+  const [showPollCreator, setShowPollCreator] = useState(false);
+  const [pollQuestion, setPollQuestion] = useState("");
+  const [pollOptions, setPollOptions] = useState<string[]>(["", ""]); // Start with two empty options
+  const [pollDuration, setPollDuration] = useState("1 day"); // Default duration
   // New state for showing/hiding "Add to your post" options
   const [showAddOptions, setShowAddOptions] = useState(false);
 
@@ -143,6 +148,24 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
 
     return null
   }
+  const handleAddPollOption = () => {
+  if (pollOptions.length < MAX_POLL_OPTIONS) {
+    setPollOptions([...pollOptions, ""]);
+  }
+};
+
+const handleRemovePollOption = (index: number) => {
+  if (pollOptions.length > MIN_POLL_OPTIONS) {
+    setPollOptions(pollOptions.filter((_, i) => i !== index));
+  }
+};
+
+const handlePollOptionChange = (index: number, value: string) => {
+  const newOptions = [...pollOptions];
+  newOptions[index] = value;
+  setPollOptions(newOptions);
+};
+  
   const handleMediaUpload = useCallback(
     async (files: FileList) => {
       if (files.length === 0) return
