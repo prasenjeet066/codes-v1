@@ -716,7 +716,21 @@ const handlePollOptionChange = (index: number, value: string) => {
   const featureOptions = [
     { icon: ImageIcon, label: "Photo/Video", onClick: () => fileInputRef.current?.click(), disabled: isUploadingMedia || totalMediaCount >= MAX_MEDIA_FILES },
     { icon: Smile, label: "Gif", onClick: () => setShowGiphyPicker(true), disabled: totalMediaCount >= MAX_MEDIA_FILES },
-    { icon: Vote, label: "Poll", onClick: () => null },
+    { icon: Vote, label: "Poll", onClick: () => {
+      if (totalMediaCount === 0) { // Only allow poll if no media is attached
+        setShowPollCreator(true);
+        setShowAddOptions(true); // Automatically open add options when poll is selected
+        setContent(""); // Clear content when starting a poll
+      if (contentEditableRef.current) {
+          contentEditableRef.current.textContent = '';
+          contentEditableRef.current.classList.add('placeholder-shown');
+        }
+      } else {
+        setError("You cannot add a poll when media is already attached to your post.");
+      }
+    },
+    disabled: totalMediaCount > 0 || showPollCreator, // Disabled if media exists or poll is already active
+  },
     { icon: HandHelping, label: "Adoption", onClick: () => console.log("Adoption clicked") },
     { icon: FileWarning, label: "Lost Notice", onClick: () => console.log("Lost Notice clicked") },
     { icon: Calendar, label: "Event", onClick: () => console.log("Event clicked") },
