@@ -1,0 +1,516 @@
+"use client"
+
+import { useEffect, useState, useMemo } from "react"
+import { supabase } from "@/lib/supabase/client"
+import { PostCard } from "./post-card"
+import type { Post } from "@/types/post"
+
+interface TimelineProps {
+  userId: string
+  refreshTrigger?: number
+}
+
+interface UserInteraction {
+  user_id: string
+  target_user_id: string
+  interaction_type: 'like' | 'repost' | 'reply' | 'follow' | 'view'
+  weight: number
+  created_at: string
+}
+
+interface PostEngagement {
+  post_id: string
+  likes_count: number
+  reposts_count: number
+  replies_count: number
+  views_count: number
+  click_rate: number
+  engagement_rate: number
+  recency_hours: number
+}
+
+export function Timeline({ userId, refreshTrigger }: TimelineProps) {
+  const [posts, setPosts] = useState<Post[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [currentUser, setCurrentUser] = useState<any>(null)
+  const [userInteractions, setUserInteractions] = useState<UserInteraction[]>([])
+  const [followingUsers, setFollowingUsers] = useState<string[]>([])
+  const [algorithmMode, setAlgorithmMode] = useState<'chronological' | 'algorithmic'>('algorithmic')
+
+  useEffect(() => {
+    fetchCurrentUser()
+    fetchUserInteractions()
+    fetchFollowingUsers()
+  }, [userId])
+
+  useEffect(() => {
+    fetchPosts()
+  }, [userId, refreshTrigger, algorithmMode])
+
+  const fetchCurrentUser = async () => {
+    try {
+      const { data } = await supabase.from("profiles").select("*").eq("id", userId).single()
+      setCurrentUser(data)
+    } catch (error) {
+      console.error("Error fetching current user:", error)
+    }
+  }
+
+  const fetchUserInteractions = async () => {
+    try {
+      // Fetch user's interaction history for personalization
+      const { data } = await supabase
+        .from("user_interactions")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(1000)
+      
+      setUserInteractions(data || [])
+    } catch (error) {
+      console.error("Error fetching user interactions:", error)
+    }
+  }
+
+  const fetchFollowingUsers = async () => {
+    try {
+      const { data } = await supabase
+        .from("follows")
+        .select("following_id")
+        .eq("follower_id", userId)
+      
+      setFollowingUsers(data?.map(f => f.following_id) || [])
+    } catch (error) {
+      console.error("Error fetching following users:", error)
+    }
+  }
+
+  const calculateEngagementScore = (post: Post): number => {
+    const now = new Date()
+    const postTime = new Date(post.repost_created_at || post.created_at)
+    const hoursOld = (now.getTime() - postTime.getTime()) / (1000 * 60 * 60)
+    
+    // Time decay factor (newer posts get higher scores)
+    const timeDecayFactor = Math.exp(-hoursOld / 24) // Decay over 24 hours
+    
+    // Engagement metrics
+    const totalEngagements = post.likes_count + post.reposts_count + (post.replies_count * 2)
+    const engagementRate = totalEngagements / Math.max(post.views_count || 1, 1)
+    
+    // Base engagement score
+    let engagementScore = (
+      post.likes_count * 1 +
+      post.reposts_count * 3 +
+      post.replies_count * 5 +
+      engagementRate * 10
+    ) * timeDecayFactor
+    
+    // Boost for verified users
+    if (post.is_verified) {
+      engagementScore *= 1.2
+    }
+    
+    return engagementScore
+  }
+
+  const calculateUserAffinityScore = (post: Post): number => {
+    let affinityScore = 0
+    
+    // Following bonus
+    if (followingUsers.includes(post.user_id)) {
+      affinityScore += 10
+    }
+    
+    // Interaction history with this user
+    const userInteractionHistory = userInteractions.filter(
+      interaction => interaction.target_user_id === post.user_id
+    )
+    
+    const interactionWeights = {
+      like: 1,
+      repost: 2,
+      reply: 3,
+      follow: 5,
+      view: 0.1
+    }
+    
+    userInteractionHistory.forEach(interaction => {
+      const recency = (Date.now() - new Date(interaction.created_at).getTime()) / (1000 * 60 * 60 * 24)
+      const decayFactor = Math.exp(-recency / 30) // Decay over 30 days
+      affinityScore += (interactionWeights[interaction.interaction_type] || 0) * decayFactor
+    })
+    
+    return affinityScore
+  }
+
+  const calculateContentRelevanceScore = (post: Post): number => {
+    let relevanceScore = 0
+    
+    // Content type preferences based on user history
+    const userLikedContentTypes = userInteractions
+      .filter(i => i.interaction_type === 'like')
+      .map(i => i.target_user_id)
+    
+    // Boost posts from users the current user frequently interacts with
+    if (userLikedContentTypes.includes(post.user_id)) {
+      relevanceScore += 5
+    }
+    
+    // Media content typically gets more engagement
+    if (post.media_urls && post.media_urls.length > 0) {
+      relevanceScore += 3
+    }
+    
+    // Longer content might be more valuable
+    if (post.content && post.content.length > 100) {
+      relevanceScore += 2
+    }
+    
+    return relevanceScore
+  }
+
+  const calculateViralityScore = (post: Post): number => {
+    const now = new Date()
+    const postTime = new Date(post.repost_created_at || post.created_at)
+    const hoursOld = (now.getTime() - postTime.getTime()) / (1000 * 60 * 60)
+    
+    // Virality is based on engagement velocity
+    const engagementVelocity = (post.likes_count + post.reposts_count + post.replies_count) / Math.max(hoursOld, 1)
+    
+    // Viral threshold - posts gaining engagement quickly
+    const viralityMultiplier = engagementVelocity > 5 ? 2 : 1
+    
+    return engagementVelocity * viralityMultiplier
+  }
+
+  const calculateDiversityScore = (post: Post, index: number): number => {
+    // Promote diversity by reducing score for consecutive posts from same user
+    const recentPosts = posts.slice(Math.max(0, index - 5), index)
+    const sameUserPosts = recentPosts.filter(p => p.user_id === post.user_id).length
+    
+    return Math.max(0, 1 - (sameUserPosts * 0.2))
+  }
+
+  const calculateAlgorithmicScore = (post: Post, index: number): number => {
+    const engagementScore = calculateEngagementScore(post)
+    const affinityScore = calculateUserAffinityScore(post)
+    const relevanceScore = calculateContentRelevanceScore(post)
+    const viralityScore = calculateViralityScore(post)
+    const diversityScore = calculateDiversityScore(post, index)
+    
+    // Weighted combination of all factors
+    const totalScore = (
+      engagementScore * 0.3 +
+      affinityScore * 0.25 +
+      relevanceScore * 0.2 +
+      viralityScore * 0.15 +
+      diversityScore * 0.1
+    )
+    
+    return totalScore
+  }
+
+  const sortPostsAlgorithmically = (posts: Post[]): Post[] => {
+    return posts
+      .map((post, index) => ({
+        ...post,
+        algorithmicScore: calculateAlgorithmicScore(post, index)
+      }))
+      .sort((a, b) => {
+        if (algorithmMode === 'chronological') {
+          const timeA = new Date(a.repost_created_at || a.created_at).getTime()
+          const timeB = new Date(b.repost_created_at || b.created_at).getTime()
+          return timeB - timeA
+        } else {
+          return (b.algorithmicScore || 0) - (a.algorithmicScore || 0)
+        }
+      })
+  }
+
+  const fetchPosts = async () => {
+    try {
+      setIsLoading(true)
+
+      // Get posts with additional engagement metrics
+      const { data: postsData, error: postsError } = await supabase
+        .from("posts")
+        .select(`
+          id,
+          content,
+          created_at,
+          user_id,
+          media_urls,
+          media_type,
+          reply_to,
+          repost_of,
+          is_pinned,
+          views_count,
+          profiles!posts_user_id_fkey(username, display_name, avatar_url, is_verified)
+        `)
+        .order("created_at", { ascending: false })
+        .limit(100) // Fetch more posts for better algorithmic selection
+
+      if (postsError) {
+        console.error("Posts Error:", postsError)
+        return
+      }
+
+      // Process posts to handle reposts correctly
+      const processedPosts: Post[] = []
+
+      for (const post of postsData || []) {
+        if (post.repost_of) {
+          // This is a repost, get the original post
+          const { data: originalPost, error: originalError } = await supabase
+            .from("posts")
+            .select(`
+              id,
+              content,
+              created_at,
+              user_id,
+              media_urls,
+              media_type,
+              reply_to,
+              views_count,
+              profiles!posts_user_id_fkey(username, display_name, avatar_url, is_verified)
+            `)
+            .eq("id", post.repost_of)
+            .single()
+
+          if (!originalError && originalPost) {
+            // Get stats for original post
+            const [likesData, repostsData, repliesData] = await Promise.all([
+              supabase.from("likes").select("user_id").eq("post_id", originalPost.id),
+              supabase.from("posts").select("user_id").eq("repost_of", originalPost.id),
+              supabase.from("posts").select("id").eq("reply_to", originalPost.id),
+            ])
+
+            const transformedPost: Post = {
+              id: originalPost.id,
+              content: originalPost.content,
+              created_at: originalPost.created_at,
+              user_id: originalPost.user_id,
+              username: originalPost.profiles?.username || "unknown",
+              display_name: originalPost.profiles?.display_name || "Unknown User",
+              avatar_url: originalPost.profiles?.avatar_url,
+              is_verified: originalPost.profiles?.is_verified || false,
+              likes_count: likesData.data?.length || 0,
+              is_liked: likesData.data?.some((like: any) => like.user_id === userId) || false,
+              reposts_count: repostsData.data?.length || 0,
+              is_reposted: repostsData.data?.some((repost: any) => repost.user_id === userId) || false,
+              replies_count: repliesData.data?.length || 0,
+              reply_to: originalPost.reply_to,
+              media_urls: originalPost.media_urls,
+              media_type: originalPost.media_type,
+              views_count: originalPost.views_count || 0,
+              is_repost: true,
+              repost_of: originalPost.id,
+              reposted_by: post.profiles?.username,
+              post_user_id: post.user_id,
+              post_username: post.profiles?.username,
+              post_display_name: post.profiles?.display_name,
+              post_created_at: post.created_at,
+              repost_created_at: post.created_at,
+            }
+            processedPosts.push(transformedPost)
+          }
+        } else {
+          // Regular post
+          const [likesData, repostsData, repliesData] = await Promise.all([
+            supabase.from("likes").select("user_id").eq("post_id", post.id),
+            supabase.from("posts").select("user_id").eq("repost_of", post.id),
+            supabase.from("posts").select("id").eq("reply_to", post.id),
+          ])
+
+          const transformedPost: Post = {
+            id: post.id,
+            content: post.content,
+            created_at: post.created_at,
+            user_id: post.user_id,
+            username: post.profiles?.username || "unknown",
+            display_name: post.profiles?.display_name || "Unknown User",
+            avatar_url: post.profiles?.avatar_url,
+            is_verified: post.profiles?.is_verified || false,
+            likes_count: likesData.data?.length || 0,
+            is_liked: likesData.data?.some((like: any) => like.user_id === userId) || false,
+            reposts_count: repostsData.data?.length || 0,
+            is_reposted: repostsData.data?.some((repost: any) => repost.user_id === userId) || false,
+            replies_count: repliesData.data?.length || 0,
+            reply_to: post.reply_to,
+            media_urls: post.media_urls,
+            media_type: post.media_type,
+            views_count: post.views_count || 0,
+            is_repost: false,
+            repost_of: null,
+            reposted_by: null,
+            post_user_id: null,
+            post_username: null,
+            post_display_name: null,
+            post_created_at: null,
+            repost_created_at: null,
+          }
+          processedPosts.push(transformedPost)
+        }
+      }
+
+      // Apply algorithmic sorting
+      const sortedPosts = sortPostsAlgorithmically(processedPosts)
+      
+      // Limit final results to 50 posts for performance
+      setPosts(sortedPosts.slice(0, 50))
+      
+    } catch (error) {
+      console.error("Error:", error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleLike = async (postId: string, isLiked: boolean) => {
+    if (isLiked) {
+      await supabase.from("likes").delete().eq("post_id", postId).eq("user_id", userId)
+    } else {
+      await supabase.from("likes").insert({ post_id: postId, user_id: userId })
+    }
+
+    // Record interaction for algorithm learning
+    const post = posts.find(p => p.id === postId)
+    if (post) {
+      await supabase.from("user_interactions").insert({
+        user_id: userId,
+        target_user_id: post.user_id,
+        interaction_type: 'like',
+        weight: isLiked ? -1 : 1,
+        post_id: postId
+      })
+    }
+
+    // Update local state
+    setPosts(
+      posts.map((post) =>
+        post.id === postId ? { ...post, is_liked: !isLiked, likes_count: post.likes_count + (isLiked ? -1 : 1) } : post,
+      ),
+    )
+  }
+
+  const handleRepost = async (postId: string, isReposted: boolean) => {
+    if (isReposted) {
+      // Remove repost
+      await supabase.from("posts").delete().eq("repost_of", postId).eq("user_id", userId)
+    } else {
+      // Add repost
+      await supabase.from("posts").insert({
+        repost_of: postId,
+        user_id: userId,
+        content: "",
+      })
+    }
+
+    // Record interaction for algorithm learning
+    const post = posts.find(p => p.id === postId)
+    if (post) {
+      await supabase.from("user_interactions").insert({
+        user_id: userId,
+        target_user_id: post.user_id,
+        interaction_type: 'repost',
+        weight: isReposted ? -2 : 2,
+        post_id: postId
+      })
+    }
+
+    // Update local state and refresh
+    setPosts(
+      posts.map((post) =>
+        post.id === postId
+          ? {
+              ...post,
+              is_reposted: !isReposted,
+              reposts_count: post.reposts_count + (isReposted ? -1 : 1),
+            }
+          : post,
+      ),
+    )
+
+    // Refresh timeline to show new repost
+    setTimeout(() => fetchPosts(), 500)
+  }
+
+  const handleViewPost = async (postId: string) => {
+    // Track post views for algorithm
+    const post = posts.find(p => p.id === postId)
+    if (post) {
+      await supabase.from("user_interactions").insert({
+        user_id: userId,
+        target_user_id: post.user_id,
+        interaction_type: 'view',
+        weight: 0.1,
+        post_id: postId
+      })
+      
+      // Update view count
+      await supabase.from("posts").update({ 
+        views_count: (post.views_count || 0) + 1 
+      }).eq("id", postId)
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    )
+  }
+
+  if (posts.length === 0) {
+    return (
+      <div className="text-center py-8 text-gray-500">
+        <p>No posts yet. Follow some users or create your first post!</p>
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      {/* Algorithm Mode Toggle */}
+      <div className="flex justify-center mb-4 border-b border-gray-200 pb-4">
+        <div className="flex bg-gray-100 rounded-lg p-1">
+          <button
+            onClick={() => setAlgorithmMode('algorithmic')}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              algorithmMode === 'algorithmic'
+                ? 'bg-blue-600 text-white'
+                : 'text-gray-600 hover:text-gray-800'
+            }`}
+          >
+            For You
+          </button>
+          <button
+            onClick={() => setAlgorithmMode('chronological')}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              algorithmMode === 'chronological'
+                ? 'bg-blue-600 text-white'
+                : 'text-gray-600 hover:text-gray-800'
+            }`}
+          >
+            Latest
+          </button>
+        </div>
+      </div>
+
+      {/* Posts */}
+      {posts.map((post, index) => (
+        <PostCard
+          key={`${post.id}_${post.is_repost ? post.repost_created_at : post.created_at}_${index}`}
+          post={post}
+          currentUserId={userId}
+          currentUser={currentUser}
+          onLike={handleLike}
+          onRepost={handleRepost}
+          onReply={fetchPosts}
+          onView={handleViewPost}
+        />
+      ))}
+    </div>
+  )
+}
