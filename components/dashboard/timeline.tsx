@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase/client"
 import { PostCard } from "./post-card"
-import DotSpinner from "@/component/spinner"
+import DotSpinner from "@/components/spinner"
 import type { Post } from "@/types/post"
 import {
   calculateEngagementScore,
