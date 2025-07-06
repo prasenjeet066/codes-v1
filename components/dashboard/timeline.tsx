@@ -329,7 +329,7 @@ export function Timeline({ userId, refreshTrigger }: TimelineProps) {
   return (
     <div>
       {/* Algorithm Mode Toggle */}
-      <div className="flex justify-start mb-4  pb-4">
+      <div className="flex justify-start mb-4 mt-4 border-b  pb-4">
         <div className="flex gap-2 rounded-lg p-1">
           <button
             onClick={() => setAlgorithmMode('algorithmic')}
