@@ -12,7 +12,7 @@ import {
   calculateDiversityScore,
   calculateAlgorithmicScore,
   sortPostsAlgorithmically
-} from "./timeline-algorithms"
+} from "@/lib/timeline-algorithms"
 
 interface TimelineProps {
   userId: string
