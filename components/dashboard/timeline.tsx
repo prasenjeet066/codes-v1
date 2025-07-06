@@ -313,7 +313,7 @@ export function Timeline({ userId, refreshTrigger }: TimelineProps) {
 
   if (isLoading) {
     return (
-      <div className="flex h-full items-center  justify-center">
+      <div className="flex mt-4 h-full items-center justify-center">
         <DotSpinner/>
          </div>
     )
@@ -330,18 +330,18 @@ export function Timeline({ userId, refreshTrigger }: TimelineProps) {
   return (
     <div>
       {/* Algorithm Mode Toggle */}
-      <div className="flex justify-start mb-4 mt-4 border-b  pb-4">
+      <div className="flex justify-start ml-4 mt-4 border-b  pb-4">
         <div className="flex gap-2 rounded-lg p-1">
           <button
             onClick={() => setAlgorithmMode('algorithmic')}
-            className={`px-4 py-2 bg-gray-800 rounded-full text-white text-sm font-medium transition-colors`
+            className={`px-4 py-2 bg-gray-800 rounded-full text-white text-xm font-medium transition-colors`
               }
           >
             For You
           </button>
           <button
             onClick={() => setAlgorithmMode('chronological')}
-            className={`px-4 py-2 rounded-full bg-gray-100 text-gray-800 text-sm font-medium transition-colors
+            className={`px-4 py-2 rounded-full bg-gray-100 text-gray-800 text-xm font-medium transition-colors
               `}
           >
             Most Recently

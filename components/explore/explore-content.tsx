@@ -400,13 +400,21 @@ export function ExploreContent() {
       {/* Mobile header */}
       <div className="lg:hidden bg-white border-b px-4 py-3 flex items-center justify-between">
         <h1 className="text-xl font-bold logo-font">Cōdes</h1>
+        <div className="flex pl-4 pr-4 py-2 text-lg outline-none border-none bg-gray-50 rounded-full">
+          <Search className="h-4 w-4 text-gray-400" />
+          <Input
+                      placeholder="Search for people, posts, or hashtags..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="outline-none border-none"
+                      onFocus={() => setShowSuggestions(true)}
+                    />
+        </div>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)}>
             {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
-          <Button variant="ghost" size="icon" onClick={handleSignOut}>
-            <LogOut className="h-4 w-4" />
-          </Button>
+          
         </div>
       </div>
 
