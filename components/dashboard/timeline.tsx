@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase/client"
 import { PostCard } from "./post-card"
+import DotSpinner from "@/component/spinner"
 import type { Post } from "@/types/post"
 import {
   calculateEngagementScore,
@@ -312,9 +313,9 @@ export function Timeline({ userId, refreshTrigger }: TimelineProps) {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
+      <div className="flex h-full items-center  justify-center">
+        <DotSpinner/>
+         </div>
     )
   }
 
