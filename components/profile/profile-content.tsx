@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
+import DotSpinner from "@/components/spinner"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Sidebar } from "@/components/dashboard/sidebar"
@@ -16,7 +17,7 @@ import Link from "next/link"
 import { ImageViewer } from "@/components/media/image-viewer";
 import { VerificationBadge } from "@/components/badge/verification-badge"
 
-interface ProfileContentProps {
+ interface ProfileContentProps {
   username: string
   currentUserId: string | null
 }
@@ -420,7 +421,7 @@ export function ProfileContent({ username, currentUserId }: ProfileContentProps)
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <DotSpinner/>
       </div>
     )
   }
