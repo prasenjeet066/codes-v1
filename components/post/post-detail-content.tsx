@@ -35,11 +35,7 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
   useEffect(() => {
     fetchCurrentUser()
     fetchPostAndReplies()
-    if(currentUser.id !== post.user_id){
-      const {error} = await supabase.from('posts').update({
-        views_count : post.views_count + 1
-      }).eq("id",post.id)
-    }
+    
     // Reset comment state when postId changes
     setCommentState({
       text: '',
@@ -47,7 +43,18 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
       replyParentId: postId,
     })
   }, [postId, userId])
-
+  /**
+  const setNewViewUpdate = async (data) =>{
+    try{
+      if(userId !== null){
+      const {error} = await supabase.from('posts').update({
+        views_count : post.views_count + 1
+      }).eq("id",postId)
+      }
+    }catch(error){
+      // error
+    }
+  }**/
   const fetchCurrentUser = async () => {
     try {
       const { data } = await supabase.from("profiles").select("*").eq("id", userId).single()
@@ -100,7 +107,7 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
         setIsLoading(false)
         return
       }
-
+      //setNewViewUpdate(data)
       // Fetch likes, reposts, replies count
       const [{ data: likesData }, { data: repostsData }, { data: repliesCount }] = await Promise.all([
         supabase.from("likes").select("user_id").eq("post_id", postId),
@@ -121,9 +128,17 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
         replies_count: repliesCount?.length || 0,
         is_repost: false,
       }
-
+      //setNewViewUpdate(postData)
       setPost(transformedPost)
-
+      try{
+      if(userId !== postData.user_id){
+      const {error} = await supabase.from('posts').update({
+        views_count : postData.views_count + 1
+      }).eq("id",postId)
+      }
+    }catch(error){
+      // error
+      }
       // Fetch replies (top-level only)
       const { data: repliesData, error: repliesError } = await supabase
         .from("posts")
@@ -167,6 +182,7 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
       console.error("Error fetching post and replies:", error)
       setPost(null)
     } finally {
+      
       setIsLoading(false)
     }
   }
