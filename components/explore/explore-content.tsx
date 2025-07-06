@@ -402,11 +402,11 @@ export function ExploreContent() {
         <h1 className="text-xl font-bold logo-font">Cōdes</h1>
         <div className="flex pl-4 pr-4 py-2 text-lg outline-none border-none bg-gray-50 rounded-full">
           <Search className="h-4 w-4 text-gray-400" />
-          <Input
+          <input
                       placeholder="Search for people, posts, or hashtags..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="outline-none border-none"
+                      className="outline-none border-none bg-none text-sm"
                       onFocus={() => setShowSuggestions(true)}
                     />
         </div>

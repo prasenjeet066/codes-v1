@@ -53,6 +53,8 @@ export function DashboardContent({ user }: DashboardContentProps) {
       {/* Mobile Header */}
       <div className="lg:hidden sticky top-0 z-50 bg-white border-b px-4 py-2">
         <div className="flex items-center justify-between">
+          <h1 className="text-xl font-bold logo-font">Cōdes</h1>
+          <div className="flex flex-row w-full items-center justify-end">
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
@@ -64,8 +66,7 @@ export function DashboardContent({ user }: DashboardContentProps) {
             </SheetContent>
           </Sheet>
 
-          <h1 className="text-xl font-bold logo-font">Cōdes</h1>
-
+        
           <Link href={`/profile/${profile?.username}`}>
             <Avatar className="h-8 w-8">
               <AvatarImage src={profile?.avatar_url || "/placeholder.svg"} />
@@ -75,6 +76,7 @@ export function DashboardContent({ user }: DashboardContentProps) {
             </Avatar>
           </Link>
         </div>
+      </div>
       </div>
 
       <div className="flex">

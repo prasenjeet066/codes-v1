@@ -334,14 +334,14 @@ export function Timeline({ userId, refreshTrigger }: TimelineProps) {
         <div className="flex gap-2 rounded-lg p-1">
           <button
             onClick={() => setAlgorithmMode('algorithmic')}
-            className={`px-4 py-2 bg-gray-800 rounded-full text-white text-xm font-medium transition-colors`
+            className={`px-4 py-2 bg-gray-800 rounded-full text-white text-[9px] font-medium transition-colors`
               }
           >
             For You
           </button>
           <button
             onClick={() => setAlgorithmMode('chronological')}
-            className={`px-4 py-2 rounded-full bg-gray-100 text-gray-800 text-xm font-medium transition-colors
+            className={`px-4 py-2 rounded-full bg-gray-100 text-gray-800 text-[9px] font-medium transition-colors
               `}
           >
             Most Recently
