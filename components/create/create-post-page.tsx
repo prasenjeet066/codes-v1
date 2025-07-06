@@ -191,7 +191,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
           try {
             const fileExt = file.name.split(".").pop()?.toLowerCase()
             const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
-            const filePath = `posts/${userx.id}/${fileName}`
+            const filePath = `${user.id}/${fileName}`
 
             const { data, error: uploadError } = await supabase.storage.from("post-media").upload(filePath, file, {
               cacheControl: "3600",
