@@ -31,10 +31,15 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
     replyParentId: postId // by default, reply to the main post
   })
   const [isPosting, setIsPosting] = useState(false)
-
+  
   useEffect(() => {
     fetchCurrentUser()
     fetchPostAndReplies()
+    if(currentUser.id !== post.user_id){
+      const {error} = await supabase.from('posts').update({
+        views_count : post.views_count + 1
+      }).eq("id",post.id)
+    }
     // Reset comment state when postId changes
     setCommentState({
       text: '',
