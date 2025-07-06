@@ -25,7 +25,7 @@ import {
   ChevronUp,
   AlertCircle,
 } from "lucide-react"
-import { PollCreator } from "./PollCreator"
+import { PollCreator } from "@/components/create/PollCreator"
 
 const MAX_CHARACTERS = 280
 const MAX_MEDIA_FILES = 4
