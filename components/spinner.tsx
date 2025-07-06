@@ -136,5 +136,5 @@ const DotSpinner: React.FC<DotSpinnerProps> = ({
     </>
   );
 };
-
+export default DotSpinner
 // Demo component to show usage
