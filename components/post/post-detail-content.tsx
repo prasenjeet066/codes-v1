@@ -317,7 +317,7 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
     <div className="min-h-screen bg-white">
       <div className="max-w-2xl mx-auto border-x">
         {/* Header */}
-        <div className="sticky top-0 bg-white/80 backdrop-blur-md border-b px-4 py-3 flex items-center gap-4">
+        <div className="sticky top-0 bg-white/80 backdrop-blur-md border-b px-4 py-3 z-50 flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
