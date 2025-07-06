@@ -422,20 +422,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
         setError(postError.message)
         return
       }
-      let post_id = data.id
-      if(pollData){
-      const {data_poll , error} = await supabase
-        .from("polls").insert({
-          post_id: post_id
-          
-      }).select()
-        .single()
-      let polls_id = data_poll.id;
-      const {error} = await supabase
-        .from("posts").update({
-          in_post_poll: polls_id
-        }).eq("post_id",post_id)
-      }
+      
       for (const hashtag of hashtags) {
         const tagName = hashtag.slice(1)
         try {
