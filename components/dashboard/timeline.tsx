@@ -329,27 +329,21 @@ export function Timeline({ userId, refreshTrigger }: TimelineProps) {
   return (
     <div>
       {/* Algorithm Mode Toggle */}
-      <div className="flex justify-center mb-4 border-b border-gray-200 pb-4">
-        <div className="flex bg-gray-100 rounded-lg p-1">
+      <div className="flex justify-start mb-4  pb-4">
+        <div className="flex gap-2 rounded-lg p-1">
           <button
             onClick={() => setAlgorithmMode('algorithmic')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              algorithmMode === 'algorithmic'
-                ? 'bg-blue-600 text-white'
-                : 'text-gray-600 hover:text-gray-800'
-            }`}
+            className={`px-4 py-2 bg-gray-800 rounded-full text-white text-sm font-medium transition-colors`
+              }
           >
             For You
           </button>
           <button
             onClick={() => setAlgorithmMode('chronological')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              algorithmMode === 'chronological'
-                ? 'bg-blue-600 text-white'
-                : 'text-gray-600 hover:text-gray-800'
-            }`}
+            className={`px-4 py-2 rounded-full bg-gray-100 text-gray-800 text-sm font-medium transition-colors
+              `}
           >
-            Latest
+            Most Recently
           </button>
         </div>
       </div>
