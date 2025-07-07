@@ -23,7 +23,6 @@ interface PostCardProps {
   onRepost: (postId: string, isReposted: boolean) => void
   onReply?: () => void
 }
-
 interface TranslationState {
   isTranslating: boolean
   translatedText: string | null
@@ -282,7 +281,7 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
   return (
     <>
       <article 
-        className="border-b hover:bg-gray-50 transition-colors cursor-pointer"
+        className="hover:bg-gray-50 transition-colors cursor-pointer"
         
         aria-label={`Post by ${post.display_name}`}
       >
@@ -303,7 +302,7 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
                 </AvatarFallback>
               </Avatar>
             </Link>
-            <hr className="h-full w-[5px] bg-none border-l-2 border-bl-2"/>
+            <hr className="h-[30px] w-[5px] bg-none border-l-2 border-bl-2"/>
             <div className="flex-1 min-w-0">
               <div className="flex flex-col items-left gap-1">
                 <Link
@@ -368,8 +367,9 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
               </div>
             </div>
           </div>
-        <div className="text-sm p-2">
-          See more replies of this comment
+          
+        <div className="text-sm p-2 pl-4 ">
+          Show more replies…
         </div>
         </div>
         
