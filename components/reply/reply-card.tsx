@@ -323,8 +323,12 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
                   </time>
                 </div>
               </div>
+              <div className="flex flex-row items-center justify-between">
+                <hr className="h-full w-0 border-l-4 border-gray-600 rounded-bl-lg -ml-4"/>
+              
               <div>
-
+                
+                
               {/* Post content */}
               {post.content && (
                 <div className="mt-2 mb-3">
@@ -366,9 +370,10 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
                
               </div>
               </div>
+              </div>
             </div>
           </div>
-         <hr className="h-full min-h-[50px]  w-[1px] bg-none border-l-2 rounded-bl-2"/>
+
         <div className="text-sm p-2 pl-4 ">
           Show more replies…
         </div>
