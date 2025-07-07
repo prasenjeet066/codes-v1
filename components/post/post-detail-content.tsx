@@ -347,7 +347,7 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
           {!commentState.replyingTo && renderReplyInput()}
           {replies.map(reply => (
             <div key={reply.id}>
-              <ReplyCard
+              <PostCard
                 post={reply}
                 currentUserId={userId}
                 currentUser={currentUser}
