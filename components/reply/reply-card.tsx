@@ -1,14 +1,14 @@
 "use client"
 
-import { useState, useCallback, useEffect, useMemo } from "react"
+import { useState, useCallback, useMemo } from "react"
 import { formatDistanceToNow } from "date-fns"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { supabase } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Heart, Loader2, MessageCircle, Languages, Repeat2, Share, Pin, AlertCircle } from "lucide-react"
 import Link from "next/link"
-import { ReplyDialog } from "@/components/dashboard/reply-dialog"
-import { PostActionsMenu } from "@/components/dashboard/post-actions-menu"
+import { ReplyDialog } from "./reply-dialog"
+import { PostActionsMenu } from "./post-actions-menu"
 import { VerificationBadge } from "@/components/badge/verification-badge"
 import LinkPreview from "@/components/link-preview"
 import DOMPurify from "dompurify"
@@ -21,7 +21,7 @@ interface PostCardProps {
   currentUser: any
   onLike: (postId: string, isLiked: boolean) => void
   onRepost: (postId: string, isReposted: boolean) => void
-  onReply ? : () => void
+  onReply?: () => void
 }
 
 interface TranslationState {
@@ -66,9 +66,8 @@ const smartTruncate = (text: string, maxLength: number): string => {
 
 export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, onReply }: PostCardProps) {
   const [showReplyDialog, setShowReplyDialog] = useState(false)
-  const [showTrim, SetShowTrim] = useState("trim")
   const [repostLoading, setRepostLoading] = useState(false)
-  const [translation, setTranslation] = useState < TranslationState > ({
+  const [translation, setTranslation] = useState<TranslationState>({
     isTranslating: false,
     translatedText: null,
     originalText: post.content,
@@ -85,11 +84,11 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
   const isPostPage = useMemo(() => pathname.startsWith("/post"), [pathname])
   
   const MAX_LENGTH = 100
-  const shouldTrim = post.content.length > MAX_LENGTH
-  let displayContent = shouldTrim ? smartTruncate(post.content, MAX_LENGTH) : post.content
+  const shouldTrim = !isPostPage && post.content.length > MAX_LENGTH
+  const displayContent = shouldTrim ? smartTruncate(post.content, MAX_LENGTH) : post.content
   
   // Translation function with better error handling
-  const translateText = useCallback(async (text: string, targetLang: string = "bn"): Promise < string > => {
+  const translateText = useCallback(async (text: string, targetLang: string = "bn"): Promise<string> => {
     try {
       const res = await fetch("https://libretranslate.com/translate", {
         method: "POST",
@@ -118,17 +117,16 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
       throw new Error("Translation service unavailable")
     }
   }, [])
-  
+
   // Enhanced content formatting with better security
   const formatContent = useCallback((content: string) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g
-    
+
     // Sanitize content first
     const sanitizedContent = DOMPurify.sanitize(content, {
       ALLOWED_TAGS: [],
       ALLOWED_ATTR: [],
     })
-    useEffect(() => { post.content.length > MAX_LENGTH ? SetShowTrim("trim") : SetShowTrim("no-trim") }, [post])
     
     return sanitizedContent
       .replace(
@@ -140,11 +138,11 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
         '<span class="text-blue-600 hover:underline cursor-pointer font-medium transition-colors">#$1</span>',
       )
       .replace(
-        /@([a-zA-Z0-9_]+)/g,
+        /@([a-zA-Z0-9_]+)/g, 
         '<span class="text-blue-600 hover:underline cursor-pointer font-medium transition-colors">@$1</span>'
       )
   }, [])
-  
+
   // Enhanced translation handler
   const handlePostTranslate = useCallback(async () => {
     if (translation.isTranslating) return
@@ -154,7 +152,7 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
       isTranslating: true,
       error: null
     }))
-    
+
     try {
       const translatedText = await translateText(post.content, translation.targetLang)
       setTranslation(prev => ({
@@ -171,7 +169,7 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
       }))
     }
   }, [post.content, translation.targetLang, translation.isTranslating, translateText])
-  
+
   // Toggle between original and translated text
   const handleToggleTranslation = useCallback(() => {
     if (translation.translatedText) {
@@ -184,12 +182,12 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
       handlePostTranslate()
     }
   }, [translation.translatedText, handlePostTranslate])
-  
+
   // Reply handler
   const handleReplyClick = useCallback(() => {
     router.push(`/post/${post.id}`)
   }, [router, post.id])
-  
+
   // Enhanced repost handler with better error handling
   const handleRepostClick = useCallback(async () => {
     if (repostLoading) return
@@ -202,7 +200,7 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
           .delete()
           .eq("repost_of", post.id)
           .eq("user_id", currentUserId)
-        
+
         if (error) throw error
         onRepost(post.id, true)
       } else {
@@ -213,7 +211,7 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
             content: "",
             repost_of: post.id,
           })
-        
+
         if (error) throw error
         onRepost(post.id, false)
       }
@@ -224,7 +222,7 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
       setRepostLoading(false)
     }
   }, [repostLoading, post.is_reposted, post.id, currentUserId, onRepost])
-  
+
   // Enhanced pin handler
   const handlePinPost = useCallback(async () => {
     try {
@@ -233,23 +231,23 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
         .update({ is_pinned: !post.is_pinned })
         .eq("id", post.id)
         .eq("user_id", currentUserId)
-      
+
       if (error) throw error
       onReply?.()
     } catch (error) {
       console.error("Error pinning post:", error)
     }
   }, [post.is_pinned, post.id, currentUserId, onReply])
-  
+
   // Enhanced media rendering with loading states
   const renderMedia = useCallback((mediaUrls: string[] | null, mediaType: string | null) => {
     if (!mediaUrls || mediaUrls.length === 0) return null
-    
+
     const handleMediaClick = (url: string, e: React.MouseEvent) => {
       e.stopPropagation()
       window.open(url, "_blank", "noopener,noreferrer")
     }
-    
+
     if (mediaType === "video") {
       return (
         <div className="mt-3 rounded-lg overflow-hidden border">
@@ -266,7 +264,7 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
         </div>
       )
     }
-    
+
     if (mediaType === "gif") {
       return (
         <div className={`mt-3 grid gap-2 ${mediaUrls.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}>
@@ -294,7 +292,7 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
         </div>
       )
     }
-    
+
     // Default: images
     return (
       <div className={`mt-3 grid gap-2 ${mediaUrls.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}>
@@ -324,7 +322,7 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
       </div>
     )
   }, [])
-  
+
   // Enhanced post click handler
   const handlePostClick = useCallback(() => {
     const pathParts = pathname.split("/")
@@ -333,20 +331,42 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
       router.push(`/post/${post.id}`)
     }
   }, [pathname, post.id, router])
-  
+
   // Determine what content to display
   const contentToDisplay = translation.translatedText || displayContent
-  
+
   return (
     <>
       <article 
         className="border-b hover:bg-gray-50 transition-colors cursor-pointer"
-        
+        onClick={handlePostClick}
         aria-label={`Post by ${post.display_name}`}
       >
-        <div className="p-4 flex flex-col">
+        <div className="p-4">
           {/* Repost header */}
-          
+          {post.is_repost && (
+            <div className="flex items-center gap-2 mb-3 text-gray-500 text-sm">
+              <Repeat2 className="h-4 w-4" />
+              <span>
+                Reposted by{" "}
+                <Link 
+                  href={`/profile/${post.reposted_by}`} 
+                  className="text-blue-600 hover:underline transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  @{post.reposted_by}
+                </Link>
+              </span>
+            </div>
+          )}
+
+          {/* Pin indicator */}
+          {post.is_pinned && (
+            <div className="flex items-center gap-2 mb-3 text-blue-600 text-sm">
+              <Pin className="h-4 w-4" />
+              <span>Pinned Post</span>
+            </div>
+          )}
 
           <div className="flex gap-3">
             <Link 
@@ -382,10 +402,9 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
                   </time>
                 </div>
               </div>
-
+              <div className ="border-l-2 border-gray-500 border-bl-lg">
               {/* Post content */}
-                <div className="border-l-2 border-gray-500 rounded-bl-lg">
-             {post.content && (
+              {post.content && (
                 <div className="mt-2 mb-3">
                   <div
                     className="text-gray-900 whitespace-pre-wrap text-sm lg:text-base leading-relaxed"
@@ -393,32 +412,53 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
                   />
                   
                   {/* Show more button */}
-                  {shouldTrim && showTrim === "trim" ? (
+                  {shouldTrim && !isPostPage && (
                     <button
                       className="text-blue-600 hover:text-blue-800 hover:underline text-sm mt-2 transition-colors"
                       onClick={(e) => {
                         e.stopPropagation()
-                       SetShowTrim("no-trim")
+                        router.push(`/post/${post.id}`)
                       }}
                     >
                       Show More
-                    </button>
-                  ):(
-                     <button
-                      className="text-blue-600 hover:text-blue-800 hover:underline text-sm mt-2 transition-colors"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                       SetShowTrim("trim")
-                      }}
-                    >
-                      Show Less
                     </button>
                   )}
                 </div>
               )}
 
               {/* Translation controls */}
-              
+              {isPostPage && (
+                <div className="mb-3">
+                  <button
+                    className="flex items-center gap-1 text-sm text-gray-600 hover:text-blue-600 transition-colors disabled:opacity-50"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleToggleTranslation()
+                    }}
+                    disabled={translation.isTranslating}
+                  >
+                    {translation.isTranslating ? (
+                      <>
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                        <span>Translating...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Languages className="h-3 w-3" />
+                        <span>{translation.translatedText ? "Show Original" : "Translate"}</span>
+                      </>
+                    )}
+                  </button>
+                  
+                  {/* Translation error */}
+                  {translation.error && (
+                    <div className="flex items-center gap-1 text-sm text-red-600 mt-1">
+                      <AlertCircle className="h-3 w-3" />
+                      <span>{translation.error}</span>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Link preview */}
               {!hasMedia && postUrl && (
@@ -431,15 +471,14 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
               {renderMedia(post.media_urls, post.media_type)}
 
               {/* Action buttons */}
-              <div className="flex items-center justify-between
-                 max-w-sm lg:max-w-md mt-3">
+              <div className="flex items-center justify-between max-w-sm lg:max-w-md mt-3">
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-gray-500  p-2 rounded-full transition-colors"
+                  className="text-gray-500 hover:text-blue-600 hover:bg-blue-50 p-2 rounded-full transition-colors"
                   onClick={(e) => {
                     e.stopPropagation()
-                    //handleReplyClick()
+                    handleReplyClick()
                   }}
                   aria-label={`Reply to post. ${post.replies_count || 0} replies`}
                 >
@@ -447,6 +486,28 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
                   <span className="text-xs lg:text-sm">{post.replies_count || 0}</span>
                 </Button>
 
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={`${
+                    post.is_reposted 
+                      ? "text-green-600 bg-green-50" 
+                      : "text-gray-500 hover:text-green-600 hover:bg-green-50"
+                  } p-2 rounded-full transition-colors`}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleRepostClick()
+                  }}
+                  disabled={repostLoading}
+                  aria-label={`${post.is_reposted ? 'Unrepost' : 'Repost'}. ${post.reposts_count || 0} reposts`}
+                >
+                  {repostLoading ? (
+                    <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                  ) : (
+                    <Repeat2 className={`h-4 w-4 mr-1 ${post.is_reposted ? "fill-current" : ""}`} />
+                  )}
+                  <span className="text-xs lg:text-sm">{post.reposts_count || 0}</span>
+                </Button>
 
                 <Button
                   variant="ghost"
@@ -466,19 +527,33 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
                   <span className="text-xs lg:text-sm">{post.likes_count}</span>
                 </Button>
 
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-500 hover:text-blue-600 hover:bg-blue-50 p-2 rounded-full transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                  aria-label="Share post"
+                >
+                  <Share className="h-4 w-4 mr-1" />
+                  <span className="text-xs lg:text-sm">Share</span>
+                </Button>
 
-               
+                <PostActionsMenu
+                  post={post}
+                  currentUserId={currentUserId}
+                  onPostUpdated={onReply}
+                  onPostDeleted={onReply}
+                  onPinPost={handlePinPost}
+                />
               </div>
               </div>
             </div>
           </div>
-
-          
         </div>
-        <div className="flex flex-row items-center">
-          2 people reply him...
+        <div className="text-[9px] p-1">
+          See more replies of this comment
         </div>
       </article>
     </>
   )
-}
+  }
