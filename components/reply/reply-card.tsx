@@ -332,7 +332,7 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
                   </time>
                 </div>
               </div>
-              <div className="flex flex-row items-center justify-start h-full pb-4">
+              <div className="flex flex-row items-start justify-start h-full pb-4">
                 <span className="h-full w-2 border-b-2 bg-none border-l-2 border-gray-400 rounded-bl-lg -ml-[10px]"></span>
               
               <div>
