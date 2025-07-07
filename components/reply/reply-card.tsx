@@ -92,6 +92,9 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
     }
     
    }
+  useEffect(()=>{
+    fetchReplies()
+  },[post])
   const MAX_LENGTH = 100
   const shouldTrim = !isPostPage && post.content.length > MAX_LENGTH
   const displayContent = shouldTrim ? smartTruncate(post.content, MAX_LENGTH) : post.content

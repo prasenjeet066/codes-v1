@@ -129,6 +129,7 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
       ALLOWED_ATTR: [],
     })
     useEffect(()=>{
+      
       post.content.length > MAX_LENGTH ? SetShowTrim("trim") : SetShowTrim("no-trim")
     },[post])
     return sanitizedContent
