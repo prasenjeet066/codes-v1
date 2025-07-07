@@ -333,7 +333,7 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
                 </div>
               </div>
               <div className="flex flex-row items-center justify-start h-full">
-                <span className="h-[50px] w-[5px] border-none bg-none border-l-4 border-gray-600 rounded-bl-lg -ml-4"></span>
+                <span className="h-[50px] w-[5px] bg-none border-l-4 border-gray-600 rounded-bl-lg -ml-4"></span>
               
               <div>
                 
