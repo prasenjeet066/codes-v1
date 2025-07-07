@@ -7,8 +7,8 @@ import { supabase } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Heart, Loader2, MessageCircle, Languages, Repeat2, Share, Pin, AlertCircle } from "lucide-react"
 import Link from "next/link"
-import { ReplyDialog } from "@/components/dashboard/reply-dialog"
-import { PostActionsMenu } from "@/components/dashboard/post-actions-menu"
+//import { ReplyDialog } from "@/components/dashboard/reply-dialog"
+//import { PostActionsMenu } from "@/components/dashboard/post-actions-menu"
 import { VerificationBadge } from "@/components/badge/verification-badge"
 import LinkPreview from "@/components/link-preview"
 import DOMPurify from "dompurify"
@@ -64,7 +64,7 @@ const smartTruncate = (text: string, maxLength: number): string => {
   return truncated.trim() + "..."
 }
 
-export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, onReply }: PostCardProps) {
+export function ReplyCard({ post, currentUserId, currentUser }) {
   const [showReplyDialog, setShowReplyDialog] = useState(false)
   const [repostLoading, setRepostLoading] = useState(false)
   const [translation, setTranslation] = useState<TranslationState>({
@@ -189,56 +189,7 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
   }, [router, post.id])
 
   // Enhanced repost handler with better error handling
-  const handleRepostClick = useCallback(async () => {
-    if (repostLoading) return
-    
-    setRepostLoading(true)
-    try {
-      if (post.is_reposted) {
-        const { error } = await supabase
-          .from("posts")
-          .delete()
-          .eq("repost_of", post.id)
-          .eq("user_id", currentUserId)
-
-        if (error) throw error
-        onRepost(post.id, true)
-      } else {
-        const { error } = await supabase
-          .from("posts")
-          .insert({
-            user_id: currentUserId,
-            content: "",
-            repost_of: post.id,
-          })
-
-        if (error) throw error
-        onRepost(post.id, false)
-      }
-    } catch (error) {
-      console.error("Error reposting:", error)
-      // You might want to show a toast notification here
-    } finally {
-      setRepostLoading(false)
-    }
-  }, [repostLoading, post.is_reposted, post.id, currentUserId, onRepost])
-
-  // Enhanced pin handler
-  const handlePinPost = useCallback(async () => {
-    try {
-      const { error } = await supabase
-        .from("posts")
-        .update({ is_pinned: !post.is_pinned })
-        .eq("id", post.id)
-        .eq("user_id", currentUserId)
-
-      if (error) throw error
-      onReply?.()
-    } catch (error) {
-      console.error("Error pinning post:", error)
-    }
-  }, [post.is_pinned, post.id, currentUserId, onReply])
-
+  
   // Enhanced media rendering with loading states
   const renderMedia = useCallback((mediaUrls: string[] | null, mediaType: string | null) => {
     if (!mediaUrls || mediaUrls.length === 0) return null
@@ -412,47 +363,7 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
 
               {/* Action buttons */}
               <div className="flex items-center justify-between max-w-sm lg:max-w-md mt-3">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-gray-500 hover:text-blue-600 hover:bg-blue-50 p-2 rounded-full transition-colors"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    //handleReplyClick()
-                  }}
-                  aria-label={`Reply to post. ${post.replies_count || 0} replies`}
-                >
-                  <MessageCircle className="h-4 w-4 mr-1" />
-                  <span className="text-xs lg:text-sm">{post.replies_count || 0}</span>
-                </Button>
-
-              
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className={`${
-                    post.is_liked 
-                      ? "text-red-600 bg-red-50" 
-                      : "text-gray-500 hover:text-red-600 hover:bg-red-50"
-                  } p-2 rounded-full transition-colors`}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onLike(post.id, post.is_liked)
-                  }}
-                  aria-label={`${post.is_liked ? 'Unlike' : 'Like'} post. ${post.likes_count} likes`}
-                >
-                  <Heart className={`h-4 w-4 mr-1 ${post.is_liked ? "fill-current" : ""}`} />
-                  <span className="text-xs lg:text-sm">{post.likes_count}</span>
-                </Button>
-
-            
-                <PostActionsMenu
-                  post={post}
-                  currentUserId={currentUserId}
-                  onPostUpdated={onReply}
-                  onPostDeleted={onReply}
-                  onPinPost={handlePinPost}
-                />
+               
               </div>
               </div>
             </div>

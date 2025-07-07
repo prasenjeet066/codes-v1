@@ -347,13 +347,11 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
           {!commentState.replyingTo && renderReplyInput()}
           {replies.map(reply => (
             <div key={reply.id}>
-              <PostCard
+              <ReplyCard
                 post={reply}
                 currentUserId={userId}
                 currentUser={currentUser}
-                onLike={handleLike}
-                onRepost={handleRepost}
-                onReply={() => handleReplyCreated(reply)}
+                
               />
               {/* Show reply input under the reply if replying to it */}
               {commentState.replyParentId === reply.id && renderReplyInput()}
