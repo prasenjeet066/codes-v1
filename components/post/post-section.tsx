@@ -343,7 +343,7 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
         
         aria-label={`Post by ${post.display_name}`}
       >
-        <div className="p-4">
+        <div className="p-4 flex flex-col">
           {/* Repost header */}
           
 
@@ -383,7 +383,11 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
               </div>
 
               {/* Post content */}
-              {post.content && (
+             
+            </div>
+          </div>
+          <div >
+             {post.content && (
                 <div className="mt-2 mb-3">
                   <div
                     className="text-gray-900 whitespace-pre-wrap text-sm lg:text-base leading-relaxed"
@@ -505,7 +509,6 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
                   onPinPost={handlePinPost}
                 />
               </div>
-            </div>
           </div>
         </div>
       </article>
