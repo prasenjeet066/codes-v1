@@ -400,7 +400,7 @@ export function ExploreContent() {
       {/* Mobile header */}
       <div className="lg:hidden bg-white border-b px-4 py-3 flex items-center justify-between">
         <h1 className="text-xl font-bold logo-font">Cōdes</h1>
-        <div className="flex pl-4 pr-4 py-2 text-lg outline-none border-none gap-2 bg-gray-50 rounded-full">
+        <div className="flex flex-row items-center justify-center pl-4 pr-4 py-2 text-lg outline-none border-none gap-2 bg-gray-50 rounded-full">
          
           <input
                       placeholder="Search for people, posts, or hashtags..."
@@ -418,6 +418,7 @@ export function ExploreContent() {
           </Button>
           
         </div>
+        
       </div>
 
       <div className="flex">
@@ -434,66 +435,9 @@ export function ExploreContent() {
             {/* Header */}
             <div className="sticky top-0 bg-white/95 backdrop-blur-md border-b z-30">
               <div className="px-4 py-4">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-2xl font-bold">Explore</h2>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant={viewMode === "list" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setViewMode("list")}
-                    >
-                      <List className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant={viewMode === "grid" ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setViewMode("grid")}
-                    >
-                      <Grid className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-
+                
             <div>
-                  {showSuggestions && (
-                    <div className="absolute top-full left-0 right-0 bg-white border border-t-0 rounded-b-xl shadow-xl z-50 max-h-80 overflow-y-auto">
-                      {searchQuery.length === 0 && searchHistory.length > 0 && (
-                        <div className="p-4">
-                          <div className="flex items-center justify-between mb-3">
-                            <span className="text-sm font-semibold text-gray-700">Recent searches</span>
-                            <Button variant="ghost" size="sm" onClick={clearSearchHistory} className="text-xs">
-                              Clear all
-                            </Button>
-                          </div>
-                          {searchHistory.map((query, index) => (
-                            <button
-                              key={index}
-                              className="flex items-center gap-3 w-full p-3 hover:bg-gray-50 rounded-lg text-left transition-colors"
-                              onClick={() => handleSearch(query)}
-                            >
-                              <Clock className="h-4 w-4 text-gray-400" />
-                              <span className="font-medium">{query}</span>
-                            </button>
-                          ))}
-                        </div>
-                      )}
-
-                      {suggestions.length > 0 && (
-                        <div className="p-4 border-t">
-                          <span className="text-sm font-semibold text-gray-700 mb-3 block">Suggestions</span>
-                          {suggestions.map((suggestion, index) => (
-                            <button
-                              key={index}
-                              className="flex items-center gap-3 text-[10px] w-full p-3 hover:bg-gray-50 rounded-lg text-left transition-colors"
-                              onClick={() => handleSearch(suggestion)}
-                            >
-                              <span className="text-[10px]">@{suggestion}</span>
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
+                
                 </div>
 
                 {/* Search Filters */}

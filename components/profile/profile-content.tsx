@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import DotSpinner from "@/components/spinner"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import MediaGrid from "@/components/post/media-grid"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Sidebar } from "@/components/dashboard/sidebar"
 import { PostCard } from "@/components/dashboard/post-card"
@@ -465,6 +466,29 @@ export function ProfileContent({ username, currentUserId }: ProfileContentProps)
       )}
     </div>
   )
+  const renderTabContentMedia = (media:Post[], emptyMessage: string)=>(
+    <div>
+       {
+         media.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+          <p>{emptyMessage}</p>
+        </div>
+         ):(
+           
+             media.map((srcMedia)=>{
+               (
+                 <MediaGrid array={srcMedia}/>
+               )
+             })
+           
+         )
+        
+         
+       }
+    </div>
+  )
+    
+  
 
   return (
     <div className="min-h-screen bg-gray-50 bengali-font">
@@ -658,7 +682,7 @@ export function ProfileContent({ username, currentUserId }: ProfileContentProps)
               </TabsContent>
 
               <TabsContent value="media" className="mt-0">
-                {renderTabContent(media, "এখনো কোনো মিডিয়া নেই")}
+                {renderTabContentMedia(media, "এখনো কোনো মিডিয়া নেই")}
               </TabsContent>
             </Tabs>
           </div>
