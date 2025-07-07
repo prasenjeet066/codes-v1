@@ -65,6 +65,7 @@ const smartTruncate = (text: string, maxLength: number): string => {
 
 export function ReplyCard({ post, currentUserId, currentUser }) {
   const [showReplyDialog, setShowReplyDialog] = useState(false)
+  const [replies, setReplise] = useState([])
   const [repostLoading, setRepostLoading] = useState(false)
   const [translation, setTranslation] = useState<TranslationState>({
     isTranslating: false,
@@ -81,7 +82,16 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
   const postUrl = useMemo(() => extractFirstUrl(post.content), [post.content])
   const hasMedia = useMemo(() => post.media_urls && post.media_urls.length > 0, [post.media_urls])
   const isPostPage = useMemo(() => pathname.startsWith("/post"), [pathname])
-  
+  const fetchReplies = async () => {
+    try {
+      const {data, error} = await supabase.from("posts").select("*").eq("reply_to",post.id)
+    } catch (err) {
+      // error
+    }finally {
+      setReplise(data)
+    }
+    
+   }
   const MAX_LENGTH = 100
   const shouldTrim = !isPostPage && post.content.length > MAX_LENGTH
   const displayContent = shouldTrim ? smartTruncate(post.content, MAX_LENGTH) : post.content
@@ -214,7 +224,6 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
         </div>
       )
     }
-
     if (mediaType === "gif") {
       return (
         <div className={`mt-3 grid gap-2 ${mediaUrls.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}>
@@ -373,10 +382,18 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
               </div>
             </div>
           </div>
-
-        <div className="text-sm p-2 pl-4 ">
-          Show more replies…
-        </div>
+          {
+            replies.length > 0 && (
+            <div className="text-sm p-2 pl-4" onClick ={(e)=>{
+              //fn 
+              //show replys..
+              
+            }}>
+           {"See" + replies.length + " replies…"}
+          </div>
+          )
+          }
+        
         </div>
         
       </article>
