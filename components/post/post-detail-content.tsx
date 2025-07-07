@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft, Loader2, Paperclip } from "lucide-react"
 import Image from "next/image"
 
+import LinkPreview from "@/components/link-preview"
+
 interface PostDetailContentProps {
   postId: string
   userId: string

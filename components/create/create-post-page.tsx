@@ -1,5 +1,6 @@
 "use client"
 import { supabase } from "@/lib/supabase/client"
+import LinkPreview from "@/components/link-preview"
 import { createPostSchema } from "@/lib/validations/post"
 import { useState, useRef, useCallback, useEffect } from "react"
 import { Button } from "@/components/ui/button"
@@ -83,7 +84,8 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
   const [pollDuration, setPollDuration] = useState("1 day")
   const [showAddOptions, setShowAddOptions] = useState(false)
   const cursorPositionRef = useRef<{ node: Node | null; offset: number } | null>(null)
-
+  const [postUrl , setPostUrl] = useState()
+  
   const characterCount = content.length
   const isOverLimit = characterCount > MAX_CHARACTERS
   const progressPercentage = (characterCount / MAX_CHARACTERS) * 100
@@ -537,7 +539,11 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
     const div = document.createElement("div")
     div.textContent = text
     let escapedText = div.innerHTML
-
+    const urlRegex = /(https?:\/\/[^\s]+)/;
+    const match = escapedText.match(urlRegex);
+    if (match.length>0){
+      setPostUrl(match[0])
+    }
     escapedText = escapedText.replace(/#([a-zA-Z0-9_\u0980-\u09FF]+)/g, '<span style="color: #1DA1F2; font-weight: bold;">#$1</span>')
     escapedText = escapedText.replace(/@([a-zA-Z0-9_]+)/g, '<span style="color: #1DA1F2; font-weight: bold;">@$1</span>')
     escapedText = escapedText.replace(
@@ -681,6 +687,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
 
         <div className="mb-4">
           {!showPollCreator ? (
+          <>
             <div
               ref={contentEditableRef}
               className="w-full border-0 resize-none text-lg focus:ring-0 outline-none"
@@ -709,6 +716,14 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
               }}
               dangerouslySetInnerHTML={{ __html: content ? highlightContent(content) : "" }}
             />
+              
+            
+             {!mediaFiles && postUrl  && (
+                <div className="mb-3">
+                  <LinkPreview url={postUrl} variant="compact" />
+                </div>
+              )}
+            </>
           ) : (
             <Card className="mb-4 shadow-none border">
               <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
