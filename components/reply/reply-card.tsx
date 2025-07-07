@@ -332,9 +332,9 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
                   </time>
                 </div>
               </div>
-              <div className={replies.length>0 ? "flex flex-row items-start gap-2 justify-start h-full pb-4" : ""}>
+              <div className={replies.length>0 ? "flex flex-row relative items-start gap-2 justify-start h-full pb-4" : ""}>
                 {replies.length > 0 && (
-                <span className="h-full w-2 border-b-[2px] bg-none border-l-[2px] border-gray-100 rounded-bl-lg"></span>)
+                <span className="h-full w-2 border-b-[2px] bg-none border-l-[2px] border-gray-100 rounded-bl-lg relative -translate-x-[10px]"></span>)
                 }
               <div>
                 
