@@ -400,8 +400,8 @@ export function ExploreContent() {
       {/* Mobile header */}
       <div className="lg:hidden bg-white border-b px-4 py-3 flex items-center justify-between">
         <h1 className="text-xl font-bold logo-font">Cōdes</h1>
-        <div className="flex pl-4 pr-4 py-2 text-lg outline-none border-none bg-gray-50 rounded-full">
-          <Search className="h-4 w-4 text-gray-400" />
+        <div className="flex pl-4 pr-4 py-2 text-lg outline-none border-none gap-2 bg-gray-50 rounded-full">
+         
           <input
                       placeholder="Search for people, posts, or hashtags..."
                       value={searchQuery}
@@ -409,6 +409,7 @@ export function ExploreContent() {
                       className="outline-none border-none bg-gray-50 text-sm"
                       onFocus={() => setShowSuggestions(true)}
                     />
+                    <Search className="h-4 w-4 text-gray-400" />
         </div>
         
         <div className="flex items-center gap-2">
@@ -453,33 +454,7 @@ export function ExploreContent() {
                   </div>
                 </div>
 
-                {/* Enhanced Search Bar */}
-                <div className="relative">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                    <Input
-                      placeholder="Search for people, posts, or hashtags..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-12 pr-12 h-12 text-lg border-2 focus:border-blue-500 rounded-xl"
-                      onFocus={() => setShowSuggestions(true)}
-                    />
-                    {searchQuery && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8"
-                        onClick={() => {
-                          setSearchQuery("")
-                          setShowSuggestions(false)
-                        }}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    )}
-                  </div>
-
-                  {/* Search Suggestions */}
+            <div>
                   {showSuggestions && (
                     <div className="absolute top-full left-0 right-0 bg-white border border-t-0 rounded-b-xl shadow-xl z-50 max-h-80 overflow-y-auto">
                       {searchQuery.length === 0 && searchHistory.length > 0 && (
@@ -509,11 +484,10 @@ export function ExploreContent() {
                           {suggestions.map((suggestion, index) => (
                             <button
                               key={index}
-                              className="flex items-center gap-3 w-full p-3 hover:bg-gray-50 rounded-lg text-left transition-colors"
+                              className="flex items-center gap-3 text-[10px] w-full p-3 hover:bg-gray-50 rounded-lg text-left transition-colors"
                               onClick={() => handleSearch(suggestion)}
                             >
-                              <Search className="h-4 w-4 text-gray-400" />
-                              <span className="font-medium">@{suggestion}</span>
+                              <span className="text-[10px]">@{suggestion}</span>
                             </button>
                           ))}
                         </div>
@@ -560,8 +534,8 @@ export function ExploreContent() {
                   {/* Trending Section */}
                   <section>
                     <div className="flex items-center gap-2 mb-6">
-                      <TrendingUp className="h-6 w-6 text-orange-500" />
-                      <h3 className="text-xl font-bold">Trending Now</h3>
+                      <TrendingUp className="h-6 w-6 text-gray-800" />
+                      <h3 className="text-md font-bold">Trending Now</h3>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -600,8 +574,8 @@ export function ExploreContent() {
                   {/* Suggested Users */}
                   <section>
                     <div className="flex items-center gap-2 mb-6">
-                      <UserPlus className="h-6 w-6 text-green-500" />
-                      <h3 className="text-xl font-bold">Suggested for you</h3>
+                      <UserPlus className="h-6 w-6 text-gray-800" />
+                      <h3 className="text-md font-bold">Suggested for you</h3>
                     </div>
 
                     <div

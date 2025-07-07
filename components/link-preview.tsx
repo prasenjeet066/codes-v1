@@ -83,7 +83,7 @@ function LinkPreview({ url ,variant}) {
         <img
           src={preview.image}
           alt="Link Preview"
-          className="object-cover w-full h-full"
+          className="object-cover w-full h-[30px]"
           onError={(e) => {
             e.target.onerror = null; // Prevent infinite loop
             e.target.src = 'https://placehold.co/400x160/E0E0E0/666666?text=No+Image'; // Fallback to a generic placeholder
@@ -112,8 +112,8 @@ function LinkPreview({ url ,variant}) {
       </div>
 
       {/* Text Content Section */}
-      <div className="p-4">
-        <p className="text-gray-500 text-xs font-medium uppercase mb-1 truncate">
+      <div className="p-4 bg-white">
+        <p className="text-gray-500 text-[9px] font-medium uppercase mb-1 truncate">
           {preview.domain}
         </p>
         <h3 className="text-sm font-bold text-gray-800 mb-2 line-clamp-2">

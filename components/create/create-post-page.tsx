@@ -539,11 +539,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
     const div = document.createElement("div")
     div.textContent = text
     let escapedText = div.innerHTML
-    const urlRegex = /(https?:\/\/[^\s]+)/;
-    const match = escapedText.match(urlRegex);
-    if (match.length>0){
-      setPostUrl(match[0])
-    }
+    
     escapedText = escapedText.replace(/#([a-zA-Z0-9_\u0980-\u09FF]+)/g, '<span style="color: #1DA1F2; font-weight: bold;">#$1</span>')
     escapedText = escapedText.replace(/@([a-zA-Z0-9_]+)/g, '<span style="color: #1DA1F2; font-weight: bold;">@$1</span>')
     escapedText = escapedText.replace(
@@ -696,6 +692,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
               suppressContentEditableWarning
               onInput={(e) => {
                 if (contentEditableRef.current) {
+                
                   const offset = getCaretCharacterOffset(contentEditableRef.current)
                   cursorPositionRef.current = { node: null, offset: offset }
                 }
@@ -710,6 +707,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
               }}
               onBlur={(e) => {
                 if (!e.target.textContent?.trim()) {
+                  //callSetParams()
                   e.target.textContent = e.target.dataset.placeholder || ""
                   e.target.classList.add("placeholder-shown")
                 }
@@ -718,11 +716,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
             />
               
             
-             {!mediaFiles && postUrl  && (
-                <div className="mb-3">
-                  <LinkPreview url={postUrl} variant="compact" />
-                </div>
-              )}
+            
             </>
           ) : (
             <Card className="mb-4 shadow-none border">
