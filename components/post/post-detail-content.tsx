@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import ReplyCard from "@/components/reply/reply-card"
+import {ReplyCard} from "@/components/reply/reply-card"
 import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase/client"
 import { PostSection} from "@/components/post/post-section"
