@@ -128,9 +128,8 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
       ALLOWED_TAGS: [],
       ALLOWED_ATTR: [],
     })
-    useEffect(() => {
-      post.content.length > MAX_LENGTH ? SetShowTrim("trim") : SetShowTrim("no-trim")
-    }, [post])
+    useEffect(() => { post.content.length > MAX_LENGTH ? SetShowTrim("trim") : SetShowTrim("no-trim") }, [post])
+    
     return sanitizedContent
       .replace(
         urlRegex,
@@ -385,7 +384,7 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
               </div>
 
               {/* Post content */}
-                <div class="border-l-2 border-gray-500 rounded-bl-lg">
+                <div className="border-l-2 border-gray-500 rounded-bl-lg">
              {post.content && (
                 <div className="mt-2 mb-3">
                   <div
