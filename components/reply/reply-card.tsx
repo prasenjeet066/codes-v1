@@ -323,8 +323,8 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
                   </time>
                 </div>
               </div>
-              <div className="flex flex-row items-center justify-between">
-                <hr className="h-full w-0 border-l-4 border-gray-600 rounded-bl-lg -ml-4"/>
+              <div className="flex flex-row items-center justify-start h-full">
+                <hr className="h-full w-[5px] border-none bg-none border-l-4 border-gray-600 rounded-bl-lg -ml-4"/>
               
               <div>
                 
