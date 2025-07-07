@@ -376,7 +376,20 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
 
               {/* Action buttons */}
               <div className="flex items-center justify-between max-w-sm lg:max-w-md mt-3">
-               
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-500  p-2 rounded-full transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    router.push('/post/'+post.id)
+                    //handleReplyClick()
+                  }}
+                  aria-label={`Reply to post. ${post.replies_count || 0} replies`}
+                >
+                  <MessageCircle className="h-4 w-4 mr-1" />
+                  <span className="text-xs lg:text-sm">{post.replies_count || 0}</span>
+                </Button>
               </div>
               </div>
               </div>
