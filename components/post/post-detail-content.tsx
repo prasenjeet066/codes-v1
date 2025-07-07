@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase/client"
-import { PostCard } from "@/components/dashboard/post-card"
+import { PostSection} from "@/components/post/post-section"
+import { PostCard} from "@/components/dashboard/post-card"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, Loader2, Paperclip } from "lucide-react"
 import Image from "next/image"
@@ -329,7 +330,7 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
           </div>
         </div>
         {/* Main Post */}
-        <PostCard
+        <PostSection
           post={post}
           currentUserId={userId}
           currentUser={currentUser}
