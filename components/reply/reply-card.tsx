@@ -324,7 +324,7 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
                 </div>
               </div>
               <div>
-                <hr className="h-[50px] w-[1px] bg-none border-l-2 border-bl-2"/>
+
               {/* Post content */}
               {post.content && (
                 <div className="mt-2 mb-3">
@@ -368,7 +368,7 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
               </div>
             </div>
           </div>
-          
+         <hr className="h-full min-h-[50px]  w-[1px] bg-none border-l-2 rounded-bl-2"/>
         <div className="text-sm p-2 pl-4 ">
           Show more replies…
         </div>
