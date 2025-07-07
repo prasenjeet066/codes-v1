@@ -324,14 +324,7 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
   }, [])
 
   // Enhanced post click handler
-  const handlePostClick = useCallback(() => {
-    const pathParts = pathname.split("/")
-    const currentPostId = pathParts[1] === "post" && pathParts[2] ? pathParts[2] : null
-    if (currentPostId !== post.id) {
-      router.push(`/post/${post.id}`)
-    }
-  }, [pathname, post.id, router])
-
+  
   // Determine what content to display
   const contentToDisplay = translation.translatedText || displayContent
 
@@ -339,34 +332,12 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
     <>
       <article 
         className="border-b hover:bg-gray-50 transition-colors cursor-pointer"
-        onClick={handlePostClick}
+        
         aria-label={`Post by ${post.display_name}`}
       >
         <div className="p-4">
           {/* Repost header */}
-          {post.is_repost && (
-            <div className="flex items-center gap-2 mb-3 text-gray-500 text-sm">
-              <Repeat2 className="h-4 w-4" />
-              <span>
-                Reposted by{" "}
-                <Link 
-                  href={`/profile/${post.reposted_by}`} 
-                  className="text-blue-600 hover:underline transition-colors"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  @{post.reposted_by}
-                </Link>
-              </span>
-            </div>
-          )}
-
-          {/* Pin indicator */}
-          {post.is_pinned && (
-            <div className="flex items-center gap-2 mb-3 text-blue-600 text-sm">
-              <Pin className="h-4 w-4" />
-              <span>Pinned Post</span>
-            </div>
-          )}
+         
 
           <div className="flex gap-3">
             <Link 
@@ -412,7 +383,7 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
                   />
                   
                   {/* Show more button */}
-                  {shouldTrim && !isPostPage && (
+                  {shouldTrim && (
                     <button
                       className="text-blue-600 hover:text-blue-800 hover:underline text-sm mt-2 transition-colors"
                       onClick={(e) => {
@@ -427,38 +398,7 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
               )}
 
               {/* Translation controls */}
-              {isPostPage && (
-                <div className="mb-3">
-                  <button
-                    className="flex items-center gap-1 text-sm text-gray-600 hover:text-blue-600 transition-colors disabled:opacity-50"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleToggleTranslation()
-                    }}
-                    disabled={translation.isTranslating}
-                  >
-                    {translation.isTranslating ? (
-                      <>
-                        <Loader2 className="h-3 w-3 animate-spin" />
-                        <span>Translating...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Languages className="h-3 w-3" />
-                        <span>{translation.translatedText ? "Show Original" : "Translate"}</span>
-                      </>
-                    )}
-                  </button>
-                  
-                  {/* Translation error */}
-                  {translation.error && (
-                    <div className="flex items-center gap-1 text-sm text-red-600 mt-1">
-                      <AlertCircle className="h-3 w-3" />
-                      <span>{translation.error}</span>
-                    </div>
-                  )}
-                </div>
-              )}
+              
 
               {/* Link preview */}
               {!hasMedia && postUrl && (
@@ -478,7 +418,7 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
                   className="text-gray-500 hover:text-blue-600 hover:bg-blue-50 p-2 rounded-full transition-colors"
                   onClick={(e) => {
                     e.stopPropagation()
-                    handleReplyClick()
+                    //handleReplyClick()
                   }}
                   aria-label={`Reply to post. ${post.replies_count || 0} replies`}
                 >
@@ -486,29 +426,7 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
                   <span className="text-xs lg:text-sm">{post.replies_count || 0}</span>
                 </Button>
 
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className={`${
-                    post.is_reposted 
-                      ? "text-green-600 bg-green-50" 
-                      : "text-gray-500 hover:text-green-600 hover:bg-green-50"
-                  } p-2 rounded-full transition-colors`}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handleRepostClick()
-                  }}
-                  disabled={repostLoading}
-                  aria-label={`${post.is_reposted ? 'Unrepost' : 'Repost'}. ${post.reposts_count || 0} reposts`}
-                >
-                  {repostLoading ? (
-                    <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                  ) : (
-                    <Repeat2 className={`h-4 w-4 mr-1 ${post.is_reposted ? "fill-current" : ""}`} />
-                  )}
-                  <span className="text-xs lg:text-sm">{post.reposts_count || 0}</span>
-                </Button>
-
+              
                 <Button
                   variant="ghost"
                   size="sm"
@@ -527,17 +445,7 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
                   <span className="text-xs lg:text-sm">{post.likes_count}</span>
                 </Button>
 
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-gray-500 hover:text-blue-600 hover:bg-blue-50 p-2 rounded-full transition-colors"
-                  onClick={(e) => e.stopPropagation()}
-                  aria-label="Share post"
-                >
-                  <Share className="h-4 w-4 mr-1" />
-                  <span className="text-xs lg:text-sm">Share</span>
-                </Button>
-
+            
                 <PostActionsMenu
                   post={post}
                   currentUserId={currentUserId}
