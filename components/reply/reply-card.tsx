@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useEffect,useMemo } from "react"
+import { useState, useCallback, useEffect, useMemo } from "react"
 import { formatDistanceToNow } from "date-fns"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { supabase } from "@/lib/supabase/client"
@@ -128,9 +128,9 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
       ALLOWED_TAGS: [],
       ALLOWED_ATTR: [],
     })
-    useEffect(()=>{
+    useEffect(() => {
       post.content.length > MAX_LENGTH ? SetShowTrim("trim") : SetShowTrim("no-trim")
-    },[post])
+    }, [post])
     return sanitizedContent
       .replace(
         urlRegex,
@@ -385,7 +385,7 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, 
               </div>
 
               {/* Post content */}
-                       <div className="border-l border-2 border-gray-500 rounded-bl-lg">
+                <div class="border-l-2 border-gray-500 rounded-bl-lg">
              {post.content && (
                 <div className="mt-2 mb-3">
                   <div
