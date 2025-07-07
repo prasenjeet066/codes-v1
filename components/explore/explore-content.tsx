@@ -406,10 +406,11 @@ export function ExploreContent() {
                       placeholder="Search for people, posts, or hashtags..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="outline-none border-none bg-none text-sm"
+                      className="outline-none border-none bg-gray-50 text-sm"
                       onFocus={() => setShowSuggestions(true)}
                     />
         </div>
+        
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)}>
             {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}

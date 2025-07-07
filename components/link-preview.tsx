@@ -77,9 +77,9 @@ function LinkPreview({ url ,variant}) {
   }
 
   return (
-    <div className="mt-8 border border-gray-200 rounded-xl overflow-hidden shadow-lg bg-white">
+    <div className="border border-gray-200  overflow-hidden bg-white">
       {/* Image Section with Icons */}
-      <div className="relative w-full h-40 bg-gray-100 flex items-center justify-center overflow-hidden">
+      <div className="relative w-full h-auto bg-gray-100 flex items-center justify-center overflow-hidden">
         <img
           src={preview.image}
           alt="Link Preview"
@@ -116,7 +116,7 @@ function LinkPreview({ url ,variant}) {
         <p className="text-gray-500 text-xs font-medium uppercase mb-1 truncate">
           {preview.domain}
         </p>
-        <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-2">
+        <h3 className="text-sm font-bold text-gray-800 mb-2 line-clamp-2">
           <a
             href={preview.url}
             target="_blank"
@@ -126,14 +126,14 @@ function LinkPreview({ url ,variant}) {
             {preview.title}
           </a>
         </h3>
-        <p className="text-gray-600 text-sm line-clamp-3 mb-3">
+        <p className="text-gray-600 text-[9px] line-clamp-3 mb-3">
           {preview.description}
         </p>
         <a
           href={preview.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-500 hover:underline text-sm truncate block"
+          className="text-blue-500 hover:underline text-[9px] truncate block"
           title={preview.url}
         >
           {preview.url.replace(/^(https?:\/\/)?(www\.)?/, '')} {/* Display clean URL */}
