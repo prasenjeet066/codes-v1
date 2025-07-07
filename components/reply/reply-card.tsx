@@ -332,8 +332,8 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
                   </time>
                 </div>
               </div>
-              <div className="flex flex-row items-center justify-start h-full">
-                <span className="h-[50px] w-[5px] bg-none border-l-4 border-gray-600 rounded-bl-lg -ml-4"></span>
+              <div className="flex flex-row items-center justify-start h-full mb-2">
+                <span className="h-full w-0 bg-none border-l-4 border-gray-600 rounded-bl-lg -ml-[10px]"></span>
               
               <div>
                 
