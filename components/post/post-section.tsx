@@ -397,12 +397,12 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
                   />
                   
                   {/* Show more button */}
-                  {shouldTrim && showTrim === "trim" ? (
+                  {shouldTrim  ? (
                     <button
                       className="text-blue-600 hover:text-blue-800 hover:underline text-sm mt-2 transition-colors"
                       onClick={(e) => {
                         e.stopPropagation()
-                       SetShowTrim("no-trim")
+                       
                       }}
                     >
                       Show More
@@ -412,7 +412,7 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
                       className="text-blue-600 hover:text-blue-800 hover:underline text-sm mt-2 transition-colors"
                       onClick={(e) => {
                         e.stopPropagation()
-                       SetShowTrim("trim")
+                       
                       }}
                     >
                       Show Less
