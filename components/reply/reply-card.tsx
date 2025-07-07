@@ -7,7 +7,7 @@ import { supabase } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Heart, Loader2, MessageCircle, Languages, Repeat2, Share, Pin, AlertCircle } from "lucide-react"
 import Link from "next/link"
-import { ReplyDialog } from "./reply-dialog"
+import { ReplyDialog } from "@/components/dashboard/reply-dialog"
 import { PostActionsMenu } from "@/components/dashboard/post-actions-menu"
 import { VerificationBadge } from "@/components/badge/verification-badge"
 import LinkPreview from "@/components/link-preview"
@@ -64,7 +64,7 @@ const smartTruncate = (text: string, maxLength: number): string => {
   return truncated.trim() + "..."
 }
 
-export function PostSection({ post, currentUserId, currentUser, onLike, onRepost, onReply }: PostCardProps) {
+export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost, onReply }: PostCardProps) {
   const [showReplyDialog, setShowReplyDialog] = useState(false)
   const [showTrim, SetShowTrim] = useState("trim")
   const [repostLoading, setRepostLoading] = useState(false)
@@ -385,10 +385,7 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
               </div>
 
               {/* Post content */}
-             
-            </div>
-          </div>
-          <div >
+                       <div className="border-l border-2 border-gray-500 rounded-bl-lg">
              {post.content && (
                 <div className="mt-2 mb-3">
                   <div
@@ -451,28 +448,6 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
                   <span className="text-xs lg:text-sm">{post.replies_count || 0}</span>
                 </Button>
 
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className={`${
-                    post.is_reposted 
-                      ? "text-green-600 bg-green-50" 
-                      : "text-gray-500 hover:text-green-600 hover:bg-green-50"
-                  } p-2 rounded-full transition-colors`}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handleRepostClick()
-                  }}
-                  disabled={repostLoading}
-                  aria-label={`${post.is_reposted ? 'Unrepost' : 'Repost'}. ${post.reposts_count || 0} reposts`}
-                >
-                  {repostLoading ? (
-                    <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                  ) : (
-                    <Repeat2 className={`h-4 w-4 mr-1 ${post.is_reposted ? "fill-current" : ""}`} />
-                  )}
-                  <span className="text-xs lg:text-sm">{post.reposts_count || 0}</span>
-                </Button>
 
                 <Button
                   variant="ghost"
@@ -492,26 +467,17 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
                   <span className="text-xs lg:text-sm">{post.likes_count}</span>
                 </Button>
 
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-gray-500 hover:text-blue-600 hover:bg-blue-50 p-2 rounded-full transition-colors"
-                  onClick={(e) => e.stopPropagation()}
-                  aria-label="Share post"
-                >
-                  <Share className="h-4 w-4 mr-1" />
-                  <span className="text-xs lg:text-sm">Share</span>
-                </Button>
 
-                <PostActionsMenu
-                  post={post}
-                  currentUserId={currentUserId}
-                  onPostUpdated={onReply}
-                  onPostDeleted={onReply}
-                  onPinPost={handlePinPost}
-                />
+               
               </div>
+              </div>
+            </div>
           </div>
+
+          
+        </div>
+        <div className="flex flex-row items-center">
+          2 people reply him...
         </div>
       </article>
     </>

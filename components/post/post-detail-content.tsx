@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import ReplyCard from "@/components/reply/reply-card"
 import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase/client"
 import { PostSection} from "@/components/post/post-section"
@@ -346,7 +347,7 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
           {!commentState.replyingTo && renderReplyInput()}
           {replies.map(reply => (
             <div key={reply.id}>
-              <PostCard
+              <ReplyCard
                 post={reply}
                 currentUserId={userId}
                 currentUser={currentUser}
