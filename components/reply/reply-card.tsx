@@ -302,7 +302,7 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
                 </AvatarFallback>
               </Avatar>
             </Link>
-            <hr className="h-[30px] w-[5px] bg-none border-l-2 border-bl-2"/>
+            
             <div className="flex-1 min-w-0">
               <div className="flex flex-col items-left gap-1">
                 <Link
@@ -324,6 +324,7 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
                 </div>
               </div>
               <div>
+                <hr className="h-[50px] w-[1px] bg-none border-l-2 border-bl-2"/>
               {/* Post content */}
               {post.content && (
                 <div className="mt-2 mb-3">
