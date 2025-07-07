@@ -21,7 +21,7 @@ interface PostCardProps {
   currentUser: any
   onLike: (postId: string, isLiked: boolean) => void
   onRepost: (postId: string, isReposted: boolean) => void
-  onReply?: () => void
+  onReply ? : () => void
 }
 
 interface TranslationState {
@@ -66,9 +66,9 @@ const smartTruncate = (text: string, maxLength: number): string => {
 
 export function PostSection({ post, currentUserId, currentUser, onLike, onRepost, onReply }: PostCardProps) {
   const [showReplyDialog, setShowReplyDialog] = useState(false)
-  const [showTrim , SetShowTrim] = useState("trim")
+  const [showTrim, SetShowTrim] = useState("trim")
   const [repostLoading, setRepostLoading] = useState(false)
-  const [translation, setTranslation] = useState<TranslationState>({
+  const [translation, setTranslation] = useState < TranslationState > ({
     isTranslating: false,
     translatedText: null,
     originalText: post.content,
@@ -89,7 +89,7 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
   let displayContent = shouldTrim ? smartTruncate(post.content, MAX_LENGTH) : post.content
   
   // Translation function with better error handling
-  const translateText = useCallback(async (text: string, targetLang: string = "bn"): Promise<string> => {
+  const translateText = useCallback(async (text: string, targetLang: string = "bn"): Promise < string > => {
     try {
       const res = await fetch("https://libretranslate.com/translate", {
         method: "POST",
@@ -118,11 +118,11 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
       throw new Error("Translation service unavailable")
     }
   }, [])
-
+  
   // Enhanced content formatting with better security
   const formatContent = useCallback((content: string) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g
-
+    
     // Sanitize content first
     const sanitizedContent = DOMPurify.sanitize(content, {
       ALLOWED_TAGS: [],
@@ -139,11 +139,11 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
         '<span class="text-blue-600 hover:underline cursor-pointer font-medium transition-colors">#$1</span>',
       )
       .replace(
-        /@([a-zA-Z0-9_]+)/g, 
+        /@([a-zA-Z0-9_]+)/g,
         '<span class="text-blue-600 hover:underline cursor-pointer font-medium transition-colors">@$1</span>'
       )
   }, [])
-
+  
   // Enhanced translation handler
   const handlePostTranslate = useCallback(async () => {
     if (translation.isTranslating) return
@@ -153,7 +153,7 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
       isTranslating: true,
       error: null
     }))
-
+    
     try {
       const translatedText = await translateText(post.content, translation.targetLang)
       setTranslation(prev => ({
@@ -170,7 +170,7 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
       }))
     }
   }, [post.content, translation.targetLang, translation.isTranslating, translateText])
-
+  
   // Toggle between original and translated text
   const handleToggleTranslation = useCallback(() => {
     if (translation.translatedText) {
@@ -183,12 +183,12 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
       handlePostTranslate()
     }
   }, [translation.translatedText, handlePostTranslate])
-
+  
   // Reply handler
   const handleReplyClick = useCallback(() => {
     router.push(`/post/${post.id}`)
   }, [router, post.id])
-
+  
   // Enhanced repost handler with better error handling
   const handleRepostClick = useCallback(async () => {
     if (repostLoading) return
@@ -201,7 +201,7 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
           .delete()
           .eq("repost_of", post.id)
           .eq("user_id", currentUserId)
-
+        
         if (error) throw error
         onRepost(post.id, true)
       } else {
@@ -212,7 +212,7 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
             content: "",
             repost_of: post.id,
           })
-
+        
         if (error) throw error
         onRepost(post.id, false)
       }
@@ -223,7 +223,7 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
       setRepostLoading(false)
     }
   }, [repostLoading, post.is_reposted, post.id, currentUserId, onRepost])
-
+  
   // Enhanced pin handler
   const handlePinPost = useCallback(async () => {
     try {
@@ -232,23 +232,23 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
         .update({ is_pinned: !post.is_pinned })
         .eq("id", post.id)
         .eq("user_id", currentUserId)
-
+      
       if (error) throw error
       onReply?.()
     } catch (error) {
       console.error("Error pinning post:", error)
     }
   }, [post.is_pinned, post.id, currentUserId, onReply])
-
+  
   // Enhanced media rendering with loading states
   const renderMedia = useCallback((mediaUrls: string[] | null, mediaType: string | null) => {
     if (!mediaUrls || mediaUrls.length === 0) return null
-
+    
     const handleMediaClick = (url: string, e: React.MouseEvent) => {
       e.stopPropagation()
       window.open(url, "_blank", "noopener,noreferrer")
     }
-
+    
     if (mediaType === "video") {
       return (
         <div className="mt-3 rounded-lg overflow-hidden border">
@@ -265,7 +265,7 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
         </div>
       )
     }
-
+    
     if (mediaType === "gif") {
       return (
         <div className={`mt-3 grid gap-2 ${mediaUrls.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}>
@@ -293,7 +293,7 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
         </div>
       )
     }
-
+    
     // Default: images
     return (
       <div className={`mt-3 grid gap-2 ${mediaUrls.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}>
@@ -323,7 +323,7 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
       </div>
     )
   }, [])
-
+  
   // Enhanced post click handler
   const handlePostClick = useCallback(() => {
     const pathParts = pathname.split("/")
@@ -332,10 +332,10 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
       router.push(`/post/${post.id}`)
     }
   }, [pathname, post.id, router])
-
+  
   // Determine what content to display
   const contentToDisplay = translation.translatedText || displayContent
-
+  
   return (
     <>
       <article 
@@ -511,4 +511,4 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
       </article>
     </>
   )
-  }
+}

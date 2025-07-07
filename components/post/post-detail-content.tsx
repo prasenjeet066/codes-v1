@@ -367,4 +367,4 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
       </div>
     </div>
   )
-      }
+  }
