@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { Play, Pause, Maximize2, X } from 'lucide-react';
-
-const MediaGrid = ({ array = [] }) => {
+interface ArrayMedia {
+  media_type : 'image' | 'video' | 'gif'
+  media_urls : []
+}
+const MediaGrid = ({array}) => {
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [playingVideos, setPlayingVideos] = useState(new Set());
 

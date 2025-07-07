@@ -475,11 +475,10 @@ export function ProfileContent({ username, currentUserId }: ProfileContentProps)
         </div>
          ):(
            
-             media.map((srcMedia)=>{
-               (
-                 <MediaGrid array={srcMedia}/>
-               )
-             })
+             
+                 <MediaGrid array={media}/>
+               
+             
            
          )
         
