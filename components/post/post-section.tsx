@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useEffect,useMemo,useRef } from "react"
+import { useState, useCallback, useEffect, useMemo, useRef } from "react"
 import {
   Dialog,
   DialogClose,
@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog"
 import { formatDistanceToNow } from "date-fns"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import {getVideoRatioFromSrc,getImageRatioFromSrc,getHeightFromWidth} from "@/lib/ration-lib"
+import { getVideoRatioFromSrc, getImageRatioFromSrc, getHeightFromWidth } from "@/lib/ration-lib"
 import { supabase } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Heart, Loader2, MessageCircle, Languages, Repeat2, Share, Pin, AlertCircle } from "lucide-react"
@@ -94,8 +94,8 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
   const postUrl = useMemo(() => extractFirstUrl(post.content), [post.content])
   const hasMedia = useMemo(() => post.media_urls && post.media_urls.length > 0, [post.media_urls])
   const isPostPage = useMemo(() => pathname.startsWith("/post"), [pathname])
-  const imageRef = useRef<HTMLImageElement>(null);
-  const [imageH,setH] = useState(0);
+  const imageRef = useRef < HTMLImageElement > (null);
+  const [imageH, setH] = useState(0);
   const MAX_LENGTH = 100
   const shouldTrim = post.content.length > MAX_LENGTH
   let displayContent = shouldTrim ? smartTruncate(post.content, MAX_LENGTH) : post.content
@@ -307,8 +307,8 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
       )
     }
     getImageRatioFromSrc(mediaUrls[0]).then(ratio => {
-        const height = getHeightFromWidth(imageRef.current.style.width, ratio);
-        setH(height)
+      const height = getHeightFromWidth(imageRef.current.style.width, ratio);
+      setH(height)
     })
     //document.body.style.width
     // Default: images
@@ -507,8 +507,7 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
                   <Heart className={`h-4 w-4 mr-1 ${post.is_liked ? "fill-current" : ""}`} />
                   <span className="text-xs lg:text-sm">{post.likes_count}</span>
                 </Button>
-<Dialog>
-      <DialogTrigger asChild>
+
            <Button
                   variant="ghost"
                   size="sm"
@@ -520,35 +519,8 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
                   <span className="text-xs lg:text-sm">Share</span>
                 </Button>
 
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Share link</DialogTitle>
-          <DialogDescription>
-            Anyone who has this link will be able to view this.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="flex items-center gap-2">
-          <div className="grid flex-1 gap-2">
-            <Label htmlFor="link" className="sr-only">
-              Link
-            </Label>
-            <Input
-              id="link"
-              defaultValue={"/post/"+post.id}
-              readOnly
-            />
-          </div>
-        </div>
-        <DialogFooter className="sm:justify-start">
-          <DialogClose asChild>
-            <Button type="button" variant="secondary">
-              Close
-            </Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+
+        
              
                 <PostActionsMenu
                   post={post}
