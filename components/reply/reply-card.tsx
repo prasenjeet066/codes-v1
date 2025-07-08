@@ -66,7 +66,7 @@ const ReplyPreview = ({ reply, index, total}) => {
     <div className="rounded-lg p-3 mb-2 last:mb-0">
       <div className="flex gap-3 relative">
          {total > 1 && (
-            <div className="absolute left-[5px] top-[10px] w-[5px] bg-none border-l-2 border-b-2 rounded-bl-lg h-full"></div>
+            <div className="absolute left-[10px] top-[12px] w-[5px] bg-none border-l-2 border-b-2 rounded-bl-lg h-full"></div>
           )}
         <Avatar className="h-8 w-8">
           <AvatarImage src={reply.profiles.avatar_url || undefined} alt={`${reply.profiles.display_name}'s avatar`} />
