@@ -10,8 +10,8 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "desiiseb - Multilingual Microblogging Platform",
   description: "Join the conversation. Share your thoughts. Connect with others in multiple languages.",
-  generator: "v0.dev",
-  themeColor:"#10d762"
+  generator: "v0.dev"
+
   
 }
 
@@ -27,6 +27,8 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap"
           rel="stylesheet"
         />
+        <meta name="theme-color" content="#10d762" />
+
         <link
           href="https://fonts.googleapis.com/css2?family=Racing+Sans+One&display=swap"
           rel="stylesheet"

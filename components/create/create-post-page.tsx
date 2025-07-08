@@ -53,7 +53,7 @@ interface MediaFile {
   file: File
   preview: string
   type: "image" | "video"
-  uploading?: boolean
+  uploading ? : boolean
 }
 
 interface GiphyMedia {
@@ -63,45 +63,45 @@ interface GiphyMedia {
 }
 
 export default function CreatePostPage({ user }: CreatePostPageProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const contentEditableRef = useRef<HTMLDivElement>(null)
+  const fileInputRef = useRef < HTMLInputElement > (null)
+  const contentEditableRef = useRef < HTMLDivElement > (null)
   const [content, setContent] = useState("")
-  const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([])
-  const [giphyMedia, setGiphyMedia] = useState<GiphyMedia[]>([])
-  const [gifs, setGifs] = useState<any[]>([])
+  const [mediaFiles, setMediaFiles] = useState < MediaFile[] > ([])
+  const [giphyMedia, setGiphyMedia] = useState < GiphyMedia[] > ([])
+  const [gifs, setGifs] = useState < any[] > ([])
   const [isPosting, setIsPosting] = useState(false)
   const [isUploadingMedia, setIsUploadingMedia] = useState(false)
   const [error, setError] = useState("")
   const [showGiphyPicker, setShowGiphyPicker] = useState(false)
-  const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [selectedImage, setSelectedImage] = useState < string | null > (null)
   const userx = user.user_metadata
   const [isEnhancingText, setIsEnhancingText] = useState(false)
-  const [enhancedTextSuggestion, setEnhancedTextSuggestion] = useState<string | null>(null)
+  const [enhancedTextSuggestion, setEnhancedTextSuggestion] = useState < string | null > (null)
   const [showEnhanceModal, setShowEnhanceModal] = useState(false)
   const [isPosted, setIsPosted] = useState(false)
   const [showPollCreator, setShowPollCreator] = useState(false)
   const [pollQuestion, setPollQuestion] = useState("")
-  const [pollOptions, setPollOptions] = useState<string[]>(["", ""])
+  const [pollOptions, setPollOptions] = useState < string[] > (["", ""])
   const [pollDuration, setPollDuration] = useState("1 day")
   const [showAddOptions, setShowAddOptions] = useState(false)
-  const cursorPositionRef = useRef<{ node: Node | null; offset: number } | null>(null)
-  const [postUrl , setPostUrl] = useState()
+  const cursorPositionRef = useRef < { node: Node | null;offset: number } | null > (null)
+  const [postUrl, setPostUrl] = useState()
   
   const characterCount = content.length
   const isOverLimit = characterCount > MAX_CHARACTERS
   const progressPercentage = (characterCount / MAX_CHARACTERS) * 100
   const totalMediaCount = mediaFiles.length + giphyMedia.length
-
+  
   const getProgressColor = () => {
     if (progressPercentage < 70) return "bg-green-500"
     if (progressPercentage < 90) return "bg-yellow-500"
     return "bg-red-500"
   }
-
+  
   useEffect(() => {
     fetchTrending()
   }, [])
-
+  
   const fetchTrending = async () => {
     try {
       const gifsResponse = await fetch(
@@ -117,41 +117,41 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
       setError("Failed to load trending GIFs")
     }
   }
-
+  
   const validateMediaFile = (file: File): string | null => {
     const maxSize = 50 * 1024 * 1024 // 50MB
     const allowedImageTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"]
     const allowedVideoTypes = ["video/mp4", "video/webm", "video/mov", "video/avi"]
-
+    
     if (file.size > maxSize) {
       return "File size must be less than 50MB"
     }
-
+    
     if (!allowedImageTypes.includes(file.type) && !allowedVideoTypes.includes(file.type)) {
       return "Only images (JPEG, PNG, GIF, WebP) and videos (MP4, WebM, MOV, AVI) are allowed"
     }
-
+    
     return null
   }
-
+  
   const handleAddPollOption = () => {
     if (pollOptions.length < MAX_POLL_OPTIONS) {
       setPollOptions([...pollOptions, ""])
     }
   }
-
+  
   const handleRemovePollOption = (index: number) => {
     if (pollOptions.length > MIN_POLL_OPTIONS) {
       setPollOptions(pollOptions.filter((_, i) => i !== index))
     }
   }
-
+  
   const handlePollOptionChange = (index: number, value: string) => {
     const newOptions = [...pollOptions]
     newOptions[index] = value
     setPollOptions(newOptions)
   }
-
+  
   const handleCancelPoll = () => {
     setShowPollCreator(false)
     setPollQuestion("")
@@ -159,122 +159,122 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
     setPollDuration("1 day")
     setError("")
   }
-
+  
   const handleMediaUpload = useCallback(
     async (files: FileList) => {
-      if (files.length === 0) return
-
-      const validationErrors: string[] = []
-      const validFiles: File[] = []
-
-      Array.from(files).forEach((file, index) => {
-        const error = validateMediaFile(file)
-        if (error) {
-          validationErrors.push(`File ${index + 1}: ${error}`)
-        } else {
-          validFiles.push(file)
-        }
-      })
-
-      if (validationErrors.length > 0) {
-        setError(validationErrors.join("; "))
-        return
-      }
-
-      if (totalMediaCount + validFiles.length > MAX_MEDIA_FILES) {
-        setError("You can only upload up to 4 media files")
-        return
-      }
-
-      setIsUploadingMedia(true)
-      setError("")
-
-      try {
-        const newMediaFiles: MediaFile[] = validFiles.map((file) => ({
-          id: Math.random().toString(36).substr(2, 9),
-          file,
-          preview: URL.createObjectURL(file),
-          type: file.type.startsWith("video/") ? "video" : "image",
-          uploading: true,
-        }))
-
-        setMediaFiles((prev) => [...prev, ...newMediaFiles])
-
-        const uploadPromises = validFiles.map(async (file, index) => {
-          try {
-            const fileExt = file.name.split(".").pop()?.toLowerCase()
-            const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
-            const filePath = `${user.id}/${fileName}`
-
-            const { data, error: uploadError } = await supabase.storage
-              .from("post-media")
-              .upload(filePath, file, {
-                cacheControl: "3600",
-                upsert: false,
-              })
-
-            if (uploadError) {
-              throw new Error(`Failed to upload ${file.name}: ${uploadError.message}`)
-            }
-
-            const { data: urlData } = supabase.storage.from("post-media").getPublicUrl(filePath)
-
-            if (!urlData?.publicUrl) {
-              throw new Error(`Failed to get public URL for ${file.name}`)
-            }
-
-            return {
-              originalIndex: mediaFiles.length + index,
-              publicUrl: urlData.publicUrl,
-            }
-          } catch (err) {
-            throw err
+        if (files.length === 0) return
+        
+        const validationErrors: string[] = []
+        const validFiles: File[] = []
+        
+        Array.from(files).forEach((file, index) => {
+          const error = validateMediaFile(file)
+          if (error) {
+            validationErrors.push(`File ${index + 1}: ${error}`)
+          } else {
+            validFiles.push(file)
           }
         })
-
-        const uploadResults = await Promise.allSettled(uploadPromises)
-
-        setMediaFiles((prev) => {
-          const updated = [...prev]
-          uploadResults.forEach((result, index) => {
-            if (result.status === "fulfilled") {
-              const targetIndex = result.value.originalIndex
-              if (updated[targetIndex]) {
-                URL.revokeObjectURL(updated[targetIndex].preview)
-                updated[targetIndex].preview = result.value.publicUrl
-                updated[targetIndex].uploading = false
+        
+        if (validationErrors.length > 0) {
+          setError(validationErrors.join("; "))
+          return
+        }
+        
+        if (totalMediaCount + validFiles.length > MAX_MEDIA_FILES) {
+          setError("You can only upload up to 4 media files")
+          return
+        }
+        
+        setIsUploadingMedia(true)
+        setError("")
+        
+        try {
+          const newMediaFiles: MediaFile[] = validFiles.map((file) => ({
+            id: Math.random().toString(36).substr(2, 9),
+            file,
+            preview: URL.createObjectURL(file),
+            type: file.type.startsWith("video/") ? "video" : "image",
+            uploading: true,
+          }))
+          
+          setMediaFiles((prev) => [...prev, ...newMediaFiles])
+          
+          const uploadPromises = validFiles.map(async (file, index) => {
+            try {
+              const fileExt = file.name.split(".").pop()?.toLowerCase()
+              const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+              const filePath = `${user.id}/${fileName}`
+              
+              const { data, error: uploadError } = await supabase.storage
+                .from("post-media")
+                .upload(filePath, file, {
+                  cacheControl: "3600",
+                  upsert: false,
+                })
+              
+              if (uploadError) {
+                throw new Error(`Failed to upload ${file.name}: ${uploadError.message}`)
               }
+              
+              const { data: urlData } = supabase.storage.from("post-media").getPublicUrl(filePath)
+              
+              if (!urlData?.publicUrl) {
+                throw new Error(`Failed to get public URL for ${file.name}`)
+              }
+              
+              return {
+                originalIndex: mediaFiles.length + index,
+                publicUrl: urlData.publicUrl,
+              }
+            } catch (err) {
+              throw err
             }
           })
-          return updated
-        })
-
-        const failedUploads = uploadResults.filter((result) => result.status === "rejected")
-        if (failedUploads.length > 0) {
-          const errorMessages = failedUploads.map((result: any, index) => `File ${index + 1}: ${result.reason}`)
-          setError(`Some uploads failed: ${errorMessages.join("; ")}`)
-        }
-      } catch (err: any) {
-        console.error("Media upload error:", err)
-        setError(err.message || "Failed to upload media. Please try again.")
-
-        mediaFiles.forEach((media) => {
-          if (media.preview.startsWith("blob:")) {
-            URL.revokeObjectURL(media.preview)
+          
+          const uploadResults = await Promise.allSettled(uploadPromises)
+          
+          setMediaFiles((prev) => {
+            const updated = [...prev]
+            uploadResults.forEach((result, index) => {
+              if (result.status === "fulfilled") {
+                const targetIndex = result.value.originalIndex
+                if (updated[targetIndex]) {
+                  URL.revokeObjectURL(updated[targetIndex].preview)
+                  updated[targetIndex].preview = result.value.publicUrl
+                  updated[targetIndex].uploading = false
+                }
+              }
+            })
+            return updated
+          })
+          
+          const failedUploads = uploadResults.filter((result) => result.status === "rejected")
+          if (failedUploads.length > 0) {
+            const errorMessages = failedUploads.map((result: any, index) => `File ${index + 1}: ${result.reason}`)
+            setError(`Some uploads failed: ${errorMessages.join("; ")}`)
           }
-        })
-
-        setMediaFiles([])
-      } finally {
-        setIsUploadingMedia(false)
-        if (fileInputRef.current) {
-          fileInputRef.current.value = ""
+        } catch (err: any) {
+          console.error("Media upload error:", err)
+          setError(err.message || "Failed to upload media. Please try again.")
+          
+          mediaFiles.forEach((media) => {
+            if (media.preview.startsWith("blob:")) {
+              URL.revokeObjectURL(media.preview)
+            }
+          })
+          
+          setMediaFiles([])
+        } finally {
+          setIsUploadingMedia(false)
+          if (fileInputRef.current) {
+            fileInputRef.current.value = ""
+          }
         }
-      }
-    },
-    [mediaFiles.length, totalMediaCount, user.id]
+      },
+      [mediaFiles.length, totalMediaCount, user.id]
   )
-
+  
   const removeMediaFile = (id: string) => {
     setMediaFiles((prev) => {
       const file = prev.find((f) => f.id === id)
@@ -284,28 +284,28 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
       return prev.filter((f) => f.id !== id)
     })
   }
-
+  
   const handleGiphySelect = (gif: any, type: "gif" | "sticker") => {
     const giphyItem: GiphyMedia = {
       url: gif.url || "https://media.giphy.com/media/efg1234/giphy.gif",
       type,
       id: gif.id || Math.random().toString(36).substr(2, 9),
     }
-
+    
     if (totalMediaCount >= MAX_MEDIA_FILES) {
       setError("You can only add up to 4 media items")
       return
     }
-
+    
     setGiphyMedia((prev) => [...prev, giphyItem])
     setShowGiphyPicker(false)
     setError("")
   }
-
+  
   const removeGiphyMedia = (index: number) => {
     setGiphyMedia((prev) => prev.filter((_, i) => i !== index))
   }
-
+  
   const insertText = (text: string) => {
     if (contentEditableRef.current) {
       const selection = window.getSelection()
@@ -325,18 +325,18 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
       setContent(contentEditableRef.current.textContent || "")
     }
   }
-
+  
   const handlePost = async () => {
     if (!content.trim() && totalMediaCount === 0 && !showPollCreator) {
       setError("Please add some content, media, or a poll to your post.")
       return
     }
-
+    
     if (isOverLimit) {
       setError(`Please keep your post under ${MAX_CHARACTERS} characters.`)
       return
     }
-
+    
     if (showPollCreator) {
       if (!pollQuestion.trim()) {
         setError("Poll question cannot be empty.")
@@ -355,20 +355,20 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
     
     setIsPosting(true)
     setError("")
-
+    
     try {
       const validatedData = createPostSchema.parse({ content })
-
+      
       if (mediaFiles.some((media) => media.uploading)) {
         setError("Please wait for media uploads to complete")
         return
       }
-
+      
       const hashtags = content.match(/#[a-zA-Z0-9_\u0980-\u09FF]+/g) || []
       const uploadedMediaUrls = mediaFiles.filter((media) => !media.uploading).map((media) => media.preview)
       const giphyUrls = giphyMedia.map((gif) => gif.url)
       const allMediaUrls = [...uploadedMediaUrls, ...giphyUrls]
-
+      
       let mediaType = null
       if (allMediaUrls.length > 0) {
         if (mediaFiles.some((media) => media.type === "video")) {
@@ -379,7 +379,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
           mediaType = "image"
         }
       }
-
+      
       let pollData = null
       if (showPollCreator) {
         const now = new Date()
@@ -392,7 +392,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
         } else if (pollDuration === "1 week") {
           endsAt.setDate(now.getDate() + 7)
         }
-
+        
         pollData = {
           question: pollQuestion.trim(),
           status: "active",
@@ -415,11 +415,11 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
           content: validatedData.content,
           media_urls: allMediaUrls.length > 0 ? allMediaUrls : null,
           media_type: mediaType,
-         // in_post_poll: pollData ? [pollData] : null,
+          // in_post_poll: pollData ? [pollData] : null,
         })
         .select()
         .single()
-
+      
       if (postError) {
         console.error("Post creation error:", postError)
         setError(postError.message)
@@ -434,7 +434,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
             .upsert({ name: tagName }, { onConflict: "name" })
             .select()
             .single()
-
+          
           if (!hashtagError && hashtagData) {
             await supabase.from("post_hashtags").insert({ post_id: postData.id, hashtag_id: hashtagData.id })
           }
@@ -442,13 +442,13 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
           console.error(`Error processing hashtag ${tagName}:`, hashtagErr)
         }
       }
-
+      
       mediaFiles.forEach((media) => {
         if (media.preview.startsWith("blob:")) {
           URL.revokeObjectURL(media.preview)
         }
       })
-
+      
       setMediaFiles([])
       setGiphyMedia([])
       setContent("")
@@ -465,29 +465,29 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
       setError(err.message || "An error occurred while submitting the post.")
     } finally {
       toast("Post has been created", {
-          
-          action: {
-            label: "View",
-            onClick: () => router.push('/dashboard'),
-          },
-        })
-      }
-      setIsPosted(true)
-      setIsPosting(false)
+        
+        action: {
+          label: "View",
+          onClick: () => router.push('/dashboard'),
+        },
+      })
     }
+    setIsPosted(true)
+    setIsPosting(false)
+  }
   
   
-
+  
   const handleEnhanceText = async () => {
     if (!content.trim()) {
       setError("Please write some text to enhance first.")
       return
     }
-
+    
     setIsEnhancingText(true)
     setError("")
     setEnhancedTextSuggestion(null)
-
+    
     try {
       const prompt = `Enhance the following text to be more engaging and descriptive for a social media post. Keep it concise and within 280 characters if possible. Here's the text: "${content}"`
       let chatHistory = []
@@ -495,15 +495,15 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
       const payload = { contents: chatHistory }
       const apiKey = ""
       const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`
-
+      
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       })
-
+      
       const result = await response.json()
-
+      
       if (
         result.candidates &&
         result.candidates.length > 0 &&
@@ -524,7 +524,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
       setIsEnhancingText(false)
     }
   }
-
+  
   const useEnhancedSuggestion = () => {
     if (enhancedTextSuggestion) {
       setContent(enhancedTextSuggestion)
@@ -541,9 +541,9 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
       setEnhancedTextSuggestion(null)
     }
   }
-
+  
   const remainingChars = MAX_CHARACTERS - characterCount
-
+  
   const highlightContent = (text: string) => {
     // Sanitize text to prevent XSS
     const div = document.createElement("div")
@@ -558,7 +558,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
     )
     return escapedText
   }
-
+  
   const featureOptions = [
     {
       icon: ImageIcon,
@@ -594,7 +594,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
     { icon: FileWarning, label: "Lost Notice", onClick: () => console.log("Lost Notice clicked") },
     { icon: Calendar, label: "Event", onClick: () => console.log("Event clicked") },
   ]
-
+  
   const getCaretCharacterOffset = useCallback((element: HTMLElement) => {
     let caretOffset = 0
     const doc = element.ownerDocument
@@ -609,15 +609,15 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
     }
     return caretOffset
   }, [])
-
+  
   const setCaretPosition = useCallback((element: HTMLElement, offset: number) => {
     const range = document.createRange()
     const selection = window.getSelection()
-
+    
     let currentNode: Node | null = element
     let currentOffset = 0
     let found = false
-
+    
     const walk = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null)
     while ((currentNode = walk.nextNode())) {
       const nodeTextLength = currentNode.textContent?.length || 0
@@ -629,16 +629,16 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
       }
       currentOffset += nodeTextLength
     }
-
+    
     if (!found) {
       range.selectNodeContents(element)
       range.collapse(false)
     }
-
+    
     selection?.removeAllRanges()
     selection?.addRange(range)
   }, [])
-
+  
   useEffect(() => {
     if (contentEditableRef.current && cursorPositionRef.current) {
       const { offset } = cursorPositionRef.current
@@ -646,14 +646,14 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
       cursorPositionRef.current = null
     }
   }, [content, setCaretPosition])
-
+  
   useEffect(() => {
     if (contentEditableRef.current && !content.trim()) {
       contentEditableRef.current.textContent = contentEditableRef.current.dataset.placeholder || ""
       contentEditableRef.current.classList.add("placeholder-shown")
     }
   }, [])
-
+  
   return (
     <div className="min-h-screen bg-white">
       <div className="sticky top-0 z-50 bg-white border-b border-gray-200">
