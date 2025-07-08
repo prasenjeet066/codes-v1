@@ -16,7 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { supabase } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Heart, Loader2, MessageCircle, Languages, Repeat2, Share, Pin, AlertCircle } from "lucide-react"
-import Comment from "@/components/ui/icons/comment"
+//import Comment from "@/components/ui/icons/comment"
 import Link from "next/link"
 import { ReplyDialog } from "./reply-dialog"
 import { PostActionsMenu } from "./post-actions-menu"
@@ -493,7 +493,7 @@ export function PostCard({ post, currentUserId, currentUser, onLike, onRepost, o
                   }}
                   aria-label={`Reply to post. ${post.replies_count || 0} replies`}
                 >
-                  <Comment size="4" className="h-4 w-4 mr-1"/>
+                  <MessageCircle className="h-4 w-4 mr-1"/>
                   <span className="text-xs lg:text-sm">{post.replies_count || 0}</span>
                 </Button>
 
