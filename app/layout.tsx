@@ -11,6 +11,8 @@ export const metadata: Metadata = {
   title: "desiiseb - Multilingual Microblogging Platform",
   description: "Join the conversation. Share your thoughts. Connect with others in multiple languages.",
   generator: "v0.dev",
+  themeColor:"#10d762"
+  
 }
 
 export default function RootLayout({
