@@ -64,10 +64,8 @@ const smartTruncate = (text: string, maxLength: number): string => {
 const ReplyPreview = ({ reply, index, total}) => {
   return (
     <div className="rounded-lg p-3 mb-2 last:mb-0">
-      <div className="flex gap-3 relative">
-         {total > 1 && (
-            <div className="absolute left-[10px] top-[12px] w-[5px] bg-none border-l-2 border-b-2 rounded-bl-lg h-full"></div>
-          )}
+      <div className="flex gap-3">
+         
         <Avatar className="h-8 w-8">
           <AvatarImage src={reply.profiles.avatar_url || undefined} alt={`${reply.profiles.display_name}'s avatar`} />
           <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-xs">
@@ -405,7 +403,7 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost }
         
         {/* Reply previews */}
         {replies.length > 0 && (
-          <div className="mt-2 -ml-4 pl-3">
+          <div className="-ml-4 pl-3">
             <div className="space-y-2">
               {previewReplies.map((reply, index) => (
                 <ReplyPreview 
