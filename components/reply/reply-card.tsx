@@ -91,7 +91,7 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
     
    }
   useEffect(()=>{fetchReplies()},[])
-  console.log(replies);
+  //console.log(replies);
   const MAX_LENGTH = 100
   const shouldTrim = !isPostPage && post.content.length > MAX_LENGTH
   const displayContent = shouldTrim ? smartTruncate(post.content, MAX_LENGTH) : post.content
@@ -335,7 +335,7 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
               </div>
               <div className={replies.length>0 ? "flex flex-row relative items-start gap-2 justify-start h-full pb-4" : ""}>
                 {replies.length > 0 && (
-                <span className="h-full w-2 border-b-[2px] bg-none border-l-[2px] border-gray-100 rounded-bl-lg relative -translate-x-[10px]"></span>)
+                <span className="h-full w-2 border-b-[2px] bg-none border-l-[2px] border-gray-100 rounded-bl-lg"></span>)
                 }
               <div>
                 
@@ -381,7 +381,7 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-gray-500  p-2 rounded-full transition-colors"
+                  className="text-gray-500 rounded-full transition-colors"
                   onClick={(e) => {
                     e.stopPropagation()
                     router.push('/post/'+post.id)
@@ -399,12 +399,13 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
           </div>
           {
             replies.length > 0 && (
-            <div className="text-sm p-2 pl-4" onClick ={(e)=>{
+            <div className="text-sm p-2 pl-4 text-blue-500" onClick ={(e)=>{
               //fn 
               //show replys..
               
+              
             }}>
-           {"See" + replies.length + " replies…"}
+           {"See more" + replies.length + " replies…"}
           </div>
           )
           }
