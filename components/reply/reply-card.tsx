@@ -259,7 +259,7 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost }
       aria-label={`Post by ${post.display_name}`}
     >
       <div className="p-4">
-        <div className="flex gap-3 relative">
+        <div className="flex flex-col gap-3 relative">
           {/* Thread line */}
           {replies.length > 0 && (
             <div className="absolute left-6 top-14 w-[5px] bg-none border-l-2 border-b-2 rounded-bl-lg h-full"></div>
