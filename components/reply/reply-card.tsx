@@ -63,18 +63,18 @@ const smartTruncate = (text: string, maxLength: number): string => {
 // Reply Preview Component
 const ReplyPreview = ({ reply, index, total }) => {
   return (
-    <div className="bg-gray-100 rounded-lg p-3 mb-2 last:mb-0">
+    <div className="rounded-lg p-3 mb-2 last:mb-0">
       <div className="flex gap-3">
         <Avatar className="h-8 w-8">
-          <AvatarImage src={reply.avatar_url || undefined} alt={`${reply.display_name}'s avatar`} />
+          <AvatarImage src={reply.profiles.avatar_url || undefined} alt={`${reply.profiles.display_name}'s avatar`} />
           <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-xs">
-            {reply.display_name?.charAt(0)?.toUpperCase() || "U"}
+            {reply.profiles.display_name?.charAt(0)?.toUpperCase() || "U"}
           </AvatarFallback>
         </Avatar>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="font-medium text-sm">{reply.display_name}</span>
-            <span className="text-gray-500 text-xs">@{reply.username}</span>
+            <span className="font-medium text-sm">{reply.profiles.display_name}</span>
+            <span className="text-gray-500 text-xs">@{reply.profiles.username}</span>
             <span className="text-gray-500 text-xs">·</span>
             <time className="text-gray-500 text-xs" dateTime={reply.created_at}>
               {formatDistanceToNow(new Date(reply.created_at), { addSuffix: true })}
@@ -402,7 +402,7 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost }
         
         {/* Reply previews */}
         {replies.length > 0 && (
-          <div className="mt-4 ml-15 pl-3 border-l-2 border-gray-200">
+          <div className="mt-4 ml-15 pl-3">
             <div className="space-y-2">
               {previewReplies.map((reply, index) => (
                 <ReplyPreview 
