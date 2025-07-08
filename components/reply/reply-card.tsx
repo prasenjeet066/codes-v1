@@ -65,7 +65,7 @@ const ReplyPreview = ({ reply, index, total }) => {
   return (
     <div className="rounded-lg p-3 mb-2 last:mb-0">
       <div className="flex gap-3">
-        <Avatar className="h-8 w-8 border-2 border-white">
+        <Avatar className="h-8 w-8">
           <AvatarImage src={reply.profiles.avatar_url || undefined} alt={`${reply.profiles.display_name}'s avatar`} />
           <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-xs">
             {reply.profiles.display_name?.charAt(0)?.toUpperCase() || "U"}
@@ -259,7 +259,7 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost }
       aria-label={`Post by ${post.display_name}`}
     >
       <div className="p-4">
-        <div className="flex flex-col gap-3 relative">
+        <div className="flex gap-3 relative">
           {/* Thread line */}
           {replies.length > 0 && (
             <div className="absolute left-6 top-14 w-[5px] bg-none border-l-2 border-b-2 rounded-bl-lg h-full"></div>
@@ -398,7 +398,9 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost }
               </Button>
             </div>
           </div>
-                  {/* Reply previews */}
+        </div>
+        
+        {/* Reply previews */}
         {replies.length > 0 && (
           <div className="mt-2 -ml-4 pl-3">
             <div className="space-y-2">
@@ -421,14 +423,11 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost }
                 }}
               >
               
-                See {replies.length - 2} more replies...
+                See {replies.length - 1} more replies...
               </button>
             )}
           </div>
         )}
-        </div>
-        
-
       </div>
     </article>
   )
