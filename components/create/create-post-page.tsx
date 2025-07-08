@@ -1,5 +1,6 @@
 "use client"
 import { supabase } from "@/lib/supabase/client"
+import { toast } from "sonner"
 import LinkPreview from "@/components/link-preview"
 import { createPostSchema } from "@/lib/validations/post"
 import { useState, useRef, useCallback, useEffect } from "react"
@@ -352,7 +353,6 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
       }
     }
     
-    toast.success('Your Post Published!');
     setIsPosting(true)
     setError("")
 
@@ -464,6 +464,14 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
       console.error("Post submission error:", err)
       setError(err.message || "An error occurred while submitting the post.")
     } finally {
+      toast("Post has been created", {
+          
+          action: {
+            label: "View",
+            onClick: () => router.push('/dashboard'),
+          },
+        })
+      }
       setIsPosted(true)
       setIsPosting(false)
     }
