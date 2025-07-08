@@ -250,8 +250,8 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost }
   }, [])
 
   const contentToDisplay = translation.translatedText || displayContent
-  const previewReplies = replies.slice(0, 2)
-  const hasMoreReplies = replies.length > 2
+  const previewReplies = replies.slice(0, 1)
+  const hasMoreReplies = replies.length > 1
 
   return (
     <article 
@@ -402,7 +402,7 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost }
         
         {/* Reply previews */}
         {replies.length > 0 && (
-          <div className="mt-2  pl-3">
+          <div className="mt-2 -ml-4 pl-3">
             <div className="space-y-2">
               {previewReplies.map((reply, index) => (
                 <ReplyPreview 
