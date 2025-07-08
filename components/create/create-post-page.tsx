@@ -351,7 +351,8 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
         return
       }
     }
-
+    
+    toast.success('Your Post Published!');
     setIsPosting(true)
     setError("")
 
@@ -661,14 +662,7 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
           </Button>
         </div>
       </div>
-      {isPosted && (
-        <div className="w-full p-2 bg-gray-50 gap-2 flex flex-row items-center">
-          <CircleCheck className="h-3 w-3 text-gray-800" />
-          <small>
-            Your post successfully published! <a href="/dashboard">View Post</a>
-          </small>
-        </div>
-      )}
+    
       <div className="max-w-2xl mx-auto p-4">
         <div className="flex items-center gap-3 mb-4">
           <Avatar className="h-12 w-12">
