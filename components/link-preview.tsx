@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import {getVideoRatioFromSrc,getImageRatioFromSrc,getHeightFromWidth} from "@/lib/ration-lib"
 
 function LinkPreview({ url ,variant}) {
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(true); // Start loading when component mounts
   const [error, setError] = useState('');
-
+  const [imageH , setH] = useState(0)
+  const imageRef = useRef<HTMLImageElement>(null)
   useEffect(() => {
     // Only fetch if a URL is provided
     if (!url) {
@@ -75,15 +77,19 @@ function LinkPreview({ url ,variant}) {
   if (!preview) {
     return null; // Don't render anything if no preview data is available after loading/error
   }
-
+  getImageRatioFromSrc(preview.image).then(ratio => {
+        const height = getHeightFromWidth(imageRef.current.style.width, ratio);
+        setH(height)
+  })
   return (
     <div className="border border-gray-200  overflow-hidden bg-white">
       {/* Image Section with Icons */}
       <div className="relative w-full h-auto bg-gray-100 flex items-center justify-center overflow-hidden">
         <img
           src={preview.image}
+          ref={imageRef}
           alt="Link Preview"
-          className="object-cover w-full h-[30px]"
+          className={`object-cover w-full h-[${imageH}px]`}
           onError={(e) => {
             e.target.onerror = null; // Prevent infinite loop
             e.target.src = 'https://placehold.co/400x160/E0E0E0/666666?text=No+Image'; // Fallback to a generic placeholder

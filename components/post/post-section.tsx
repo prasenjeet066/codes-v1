@@ -1,8 +1,9 @@
 "use client"
 
-import { useState, useCallback, useEffect,useMemo } from "react"
+import { useState, useCallback, useEffect,useMemo,useRef } from "react"
 import { formatDistanceToNow } from "date-fns"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {getVideoRatioFromSrc,getImageRatioFromSrc,getHeightFromWidth} from "@/lib/ration-lib"
 import { supabase } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Heart, Loader2, MessageCircle, Languages, Repeat2, Share, Pin, AlertCircle } from "lucide-react"
@@ -83,7 +84,8 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
   const postUrl = useMemo(() => extractFirstUrl(post.content), [post.content])
   const hasMedia = useMemo(() => post.media_urls && post.media_urls.length > 0, [post.media_urls])
   const isPostPage = useMemo(() => pathname.startsWith("/post"), [pathname])
-  
+  const imageRef = useRef<HTMLImageElement>(null);
+  const [imageH,setH] = useState(0);
   const MAX_LENGTH = 100
   const shouldTrim = post.content.length > MAX_LENGTH
   let displayContent = shouldTrim ? smartTruncate(post.content, MAX_LENGTH) : post.content
@@ -250,6 +252,7 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
     }
     
     if (mediaType === "video") {
+      
       return (
         <div className="mt-3 rounded-lg overflow-hidden border">
           <video 
@@ -293,16 +296,21 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
         </div>
       )
     }
-    
+    getImageRatioFromSrc(mediaUrls[0]).then(ratio => {
+        const height = getHeightFromWidth(imageRef.current.style.width, ratio);
+        setH(height)
+    })
+    //document.body.style.width
     // Default: images
     return (
-      <div className={`mt-3 grid gap-2 ${mediaUrls.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}>
+      <div  className={`mt-3 grid gap-2 ${mediaUrls.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}>
         {mediaUrls.slice(0, 4).map((url, index) => (
           <div key={index} className="relative group">
             <img
+              ref={imageRef}
               src={url || "/placeholder.svg"}
               alt={`Post media ${index + 1}`}
-              className="w-full h-32 lg:h-48 object-cover cursor-pointer hover:opacity-90 rounded transition-opacity"
+              className={`w-full h-[${imageH}px] object-cover cursor-pointer hover:opacity-90 rounded transition-opacity`}
               onClick={(e) => handleMediaClick(url, e)}
               loading="lazy"
               onError={(e) => {
