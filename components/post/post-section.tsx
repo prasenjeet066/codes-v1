@@ -128,10 +128,7 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
       ALLOWED_TAGS: [],
       ALLOWED_ATTR: [],
     })
-    useEffect(()=>{
-      
-      post.content.length > MAX_LENGTH ? SetShowTrim("trim") : SetShowTrim("no-trim")
-    },[post])
+    
     return sanitizedContent
       .replace(
         urlRegex,
@@ -398,7 +395,7 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
                   />
                   
                   {/* Show more button */}
-                  {shouldTrim  ? (
+                  {shouldTrim== true ? (
                     <button
                       className="text-blue-600 hover:text-blue-800 hover:underline text-sm mt-2 transition-colors"
                       onClick={(e) => {

@@ -83,18 +83,15 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
   const hasMedia = useMemo(() => post.media_urls && post.media_urls.length > 0, [post.media_urls])
   const isPostPage = useMemo(() => pathname.startsWith("/post"), [pathname])
   const fetchReplies = async () => {
-    try {
+    
       const {data, error} = await supabase.from("posts").select("*").eq("reply_to",post.id)
-    } catch (err) {
+    
       // error
-    }finally {
       setReplise(data)
-    }
     
    }
-  useEffect(()=>{
-    fetchReplies()
-  },[post])
+  useEffect(()=>{fetchReplies()},[])
+  console.log(replies);
   const MAX_LENGTH = 100
   const shouldTrim = !isPostPage && post.content.length > MAX_LENGTH
   const displayContent = shouldTrim ? smartTruncate(post.content, MAX_LENGTH) : post.content
@@ -129,9 +126,10 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
       throw new Error("Translation service unavailable")
     }
   }, [])
-
+   
   // Enhanced content formatting with better security
   const formatContent = useCallback((content: string) => {
+    
     const urlRegex = /(https?:\/\/[^\s]+)/g
 
     // Sanitize content first
@@ -392,7 +390,7 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
                   aria-label={`Reply to post. ${post.replies_count || 0} replies`}
                 >
                   <MessageCircle className="h-4 w-4 mr-1" />
-                  <span className="text-xs lg:text-sm">{post.replies_count || 0}</span>
+                  <span className="text-xs lg:text-sm">{replies.length || 0}</span>
                 </Button>
               </div>
               </div>
