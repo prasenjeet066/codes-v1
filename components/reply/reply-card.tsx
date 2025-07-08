@@ -302,7 +302,7 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
           <div className="flex gap-3">
             <Link 
               href={`/profile/${post.username}`} 
-              className="flex-shrink-0" 
+              className="flex-shrink-0 relative" 
               onClick={(e) => e.stopPropagation()}
             >
               <Avatar className="cursor-pointer h-10 w-10 lg:h-12 lg:w-12 ring-2 ring-transparent hover:ring-blue-200 transition-all">
@@ -311,6 +311,9 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
                   {post.display_name?.charAt(0)?.toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
+              {replies.length > 0 && (
+                <span className="h-full w-2 border-b-[2px] bg-none border-l-[2px] border-gray-100 rounded-bl-lg"></span>)
+                }
             </Link>
             
             <div className="flex-1 min-w-0">
@@ -333,10 +336,8 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
                   </time>
                 </div>
               </div>
-              <div className={replies.length>0 ? "flex flex-row relative items-start gap-2 justify-start h-full pb-4" : ""}>
-                {replies.length > 0 && (
-                <span className="h-full w-2 border-b-[2px] bg-none border-l-[2px] border-gray-100 rounded-bl-lg"></span>)
-                }
+              <div className={replies.length>0 ? "flex flex-row relative items-start justify-start h-full pb-4" : ""}>
+             
               <div>
                 
                 
@@ -378,6 +379,34 @@ export function ReplyCard({ post, currentUserId, currentUser }) {
 
               {/* Action buttons */}
               <div className="flex items-center justify-between max-w-sm lg:max-w-md mt-3">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-500 rounded-full transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    router.push('/post/'+post.id)
+                    //handleReplyClick()
+                  }}
+                  aria-label={`Reply to post. ${post.replies_count || 0} replies`}
+                >
+                  <MessageCircle className="h-4 w-4 mr-1" />
+                  <span className="text-xs lg:text-sm">{replies.length || 0}</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-500 rounded-full transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    router.push('/post/'+post.id)
+                    //handleReplyClick()
+                  }}
+                  aria-label={`Reply to post. ${post.replies_count || 0} replies`}
+                >
+                  <MessageCircle className="h-4 w-4 mr-1" />
+                  <span className="text-xs lg:text-sm">{replies.length || 0}</span>
+                </Button>
                 <Button
                   variant="ghost"
                   size="sm"
