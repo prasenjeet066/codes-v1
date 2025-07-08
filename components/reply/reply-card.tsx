@@ -64,7 +64,7 @@ const smartTruncate = (text: string, maxLength: number): string => {
 const ReplyPreview = ({ reply, index, total}) => {
   return (
     <div className="rounded-lg p-3 mb-2 last:mb-0">
-      <div className="flex gap-3">
+      <div className="flex gap-3 relative">
          {total > 1 && (
             <div className="absolute left-6 top-14 w-[5px] bg-none border-l-2 border-b-2 rounded-bl-lg h-full"></div>
           )}
