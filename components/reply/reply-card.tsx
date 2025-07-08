@@ -63,7 +63,7 @@ const smartTruncate = (text: string, maxLength: number): string => {
 // Reply Preview Component
 const ReplyPreview = ({ reply, index, total }) => {
   return (
-    <div className="rounded-lg p-3 mb-2 last:mb-0">
+    <div className="rounded-lg  p-3 mb-2 last:mb-0">
       <div className="flex gap-3">
         <Avatar className="h-8 w-8">
           <AvatarImage src={reply.profiles.avatar_url || undefined} alt={`${reply.profiles.display_name}'s avatar`} />
@@ -74,10 +74,10 @@ const ReplyPreview = ({ reply, index, total }) => {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <span className="font-medium text-sm">{reply.profiles.display_name}</span>
-            <span className="text-gray-500 text-xs">@{reply.profiles.username}</span>
+          
             <span className="text-gray-500 text-xs">·</span>
             <time className="text-gray-500 text-xs" dateTime={reply.created_at}>
-              {formatDistanceToNow(new Date(reply.created_at), { addSuffix: true })}
+              {formatDistanceToNow(new Date(reply.created_at), { addSuffix: false })}
             </time>
           </div>
           <p className="text-sm text-gray-700 mt-1 line-clamp-2">
