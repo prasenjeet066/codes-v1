@@ -493,7 +493,7 @@ export function PostCard({ post, currentUserId, currentUser, onLike, onRepost, o
                   }}
                   aria-label={`Reply to post. ${post.replies_count || 0} replies`}
                 >
-                  <Comment size="4" className="h-4 w-4 mr-1" />
+                  <Comment size="4" className="h-4 w-4 mr-1"/>
                   <span className="text-xs lg:text-sm">{post.replies_count || 0}</span>
                 </Button>
 
