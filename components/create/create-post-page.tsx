@@ -475,7 +475,8 @@ export default function CreatePostPage({ user }: CreatePostPageProps) {
       setIsPosted(true)
       setIsPosting(false)
     }
-  }
+  
+  
 
   const handleEnhanceText = async () => {
     if (!content.trim()) {
