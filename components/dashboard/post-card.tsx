@@ -2,6 +2,16 @@
 
 import { useState, useCallback, useMemo } from "react"
 import { formatDistanceToNow } from "date-fns"
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { supabase } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"

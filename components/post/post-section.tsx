@@ -1,6 +1,16 @@
 "use client"
 
 import { useState, useCallback, useEffect,useMemo,useRef } from "react"
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { formatDistanceToNow } from "date-fns"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {getVideoRatioFromSrc,getImageRatioFromSrc,getHeightFromWidth} from "@/lib/ration-lib"
@@ -497,8 +507,9 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
                   <Heart className={`h-4 w-4 mr-1 ${post.is_liked ? "fill-current" : ""}`} />
                   <span className="text-xs lg:text-sm">{post.likes_count}</span>
                 </Button>
-
-                <Button
+<Dialog>
+      <DialogTrigger asChild>
+           <Button
                   variant="ghost"
                   size="sm"
                   className="text-gray-500 hover:text-blue-600 hover:bg-blue-50 p-2 rounded-full transition-colors"
@@ -509,6 +520,36 @@ export function PostSection({ post, currentUserId, currentUser, onLike, onRepost
                   <span className="text-xs lg:text-sm">Share</span>
                 </Button>
 
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Share link</DialogTitle>
+          <DialogDescription>
+            Anyone who has this link will be able to view this.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex items-center gap-2">
+          <div className="grid flex-1 gap-2">
+            <Label htmlFor="link" className="sr-only">
+              Link
+            </Label>
+            <Input
+              id="link"
+              defaultValue={"/post/"+post.id}
+              readOnly
+            />
+          </div>
+        </div>
+        <DialogFooter className="sm:justify-start">
+          <DialogClose asChild>
+            <Button type="button" variant="secondary">
+              Close
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+             
                 <PostActionsMenu
                   post={post}
                   currentUserId={currentUserId}
