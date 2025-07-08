@@ -402,7 +402,7 @@ export function ReplyCard({ post, currentUserId, currentUser, onLike, onRepost }
         
         {/* Reply previews */}
         {replies.length > 0 && (
-          <div className="mt-2 ml-[10px] pl-3">
+          <div className="mt-2  pl-3">
             <div className="space-y-2">
               {previewReplies.map((reply, index) => (
                 <ReplyPreview 
