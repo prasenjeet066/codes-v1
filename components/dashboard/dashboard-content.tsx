@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import type { User } from "@supabase/supabase-js"
 import { supabase } from "@/lib/supabase/client"
+import Spinner from "@/components/loader/spinner"
 import { Sidebar } from "./sidebar"
 import { Timeline } from "./timeline"
 import { TrendingHashtags } from "./trending-hashtags"
@@ -45,7 +46,9 @@ export function DashboardContent({ user }: DashboardContentProps) {
   }
 
   if (isLoading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>
+    return <div className="flex items-center justify-center min-h-screen">
+      <Spinner/>
+    </div>
   }
 
   return (

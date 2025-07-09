@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import Spinner from "@/components/loader/spinner"
 import Image from 'next/image';
 import Link from 'next/link';
 import {getVideoRatioFromSrc,getImageRatioFromSrc,getHeightFromWidth} from "@/lib/ration-lib"
@@ -60,8 +61,7 @@ function LinkPreview({ url ,variant}) {
   if (loading) {
     return (
       <div className="mt-8 p-4 text-center text-gray-600">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-2"></div>
-        Loading preview...
+        <Spinner/>
       </div>
     );
   }
@@ -89,7 +89,7 @@ function LinkPreview({ url ,variant}) {
           src={preview.image}
           ref={imageRef}
           alt="Link Preview"
-          className={`object-cover w-full h-[${imageH}px]`}
+          className={`object-cover w-full  h-[${imageH}px]`}
           onError={(e) => {
             e.target.onerror = null; // Prevent infinite loop
             e.target.src = 'https://placehold.co/400x160/E0E0E0/666666?text=No+Image'; // Fallback to a generic placeholder

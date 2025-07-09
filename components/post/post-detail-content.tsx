@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import {ReplyCard} from "@/components/reply/reply-card"
 import { useRouter } from "next/navigation"
+import Spinner from "@/components/loader/spinner"
 import { supabase } from "@/lib/supabase/client"
 import { PostSection} from "@/components/post/post-section"
 import { PostCard} from "@/components/dashboard/post-card"
@@ -241,7 +242,7 @@ export function PostDetailContent({ postId, userId }: PostDetailContentProps) {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <Spinner/>
       </div>
     )
   }

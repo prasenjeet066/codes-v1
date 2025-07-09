@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
-import DotSpinner from "@/components/spinner"
+import Spinner from "@/components/loader/spinner"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import MediaGrid from "@/components/post/media-grid"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -422,7 +422,7 @@ export function ProfileContent({ username, currentUserId }: ProfileContentProps)
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <DotSpinner/>
+        <Spinner/>
       </div>
     )
   }

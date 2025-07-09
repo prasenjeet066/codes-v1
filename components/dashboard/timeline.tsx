@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase/client"
 import { PostCard } from "./post-card"
-import DotSpinner from "@/components/spinner"
+import Spinner from "@/components/loader/spinner"
 import type { Post } from "@/types/post"
 import {
   calculateEngagementScore,
@@ -314,7 +314,7 @@ export function Timeline({ userId, refreshTrigger }: TimelineProps) {
   if (isLoading) {
     return (
       <div className="flex mt-4 h-full items-center justify-center">
-        <DotSpinner/>
+        <Spinner/>
          </div>
     )
   }
