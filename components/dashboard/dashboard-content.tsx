@@ -51,7 +51,7 @@ export function DashboardContent({ user }: DashboardContentProps) {
   return (
     <div className="min-h-screen bg-white">
       {/* Mobile Header */}
-      <div className="lg:hidden sticky top-0 z-50 bg-white border-b px-4 py-2">
+      <div className="lg:hidden sticky top-0 bg-white bg-white/50 z-30 backdrop-blur-md px-4 py-2">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold logo-font">Cōdes</h1>
           <div className="flex flex-row w-full items-center justify-end">
