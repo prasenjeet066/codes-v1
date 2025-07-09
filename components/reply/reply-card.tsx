@@ -66,7 +66,7 @@ const ReplyPreview = ({ reply, index, total}) => {
     <div className="rounded-lg p-3 mb-2 last:mb-0">
       <div className="flex gap-3">
          
-        <Avatar className="h-8 w-8">
+        <Avatar className="h-8 w-8 border-2 border-white">
           <AvatarImage src={reply.profiles.avatar_url || undefined} alt={`${reply.profiles.display_name}'s avatar`} />
           <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-xs">
             {reply.profiles.display_name?.charAt(0)?.toUpperCase() || "U"}
