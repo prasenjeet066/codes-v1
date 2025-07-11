@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Home, Search, Bell, Mail, Bookmark, User, LogOut, X, Settings, Plus } from "lucide-react"
+import { Home, Search, Bell, Mail, Bookmark, User, LogOut, X, Settings, Plus, Shield } from "lucide-react"
 
 interface SidebarProps {
   profile: any
@@ -19,6 +19,7 @@ export function Sidebar({ profile, onSignOut }: SidebarProps) {
     { icon: Bookmark, label: "Bookmarks", href: "/bookmarks" },
     { icon: User, label: "Profile", href: `/profile/${profile?.username}` },
     { icon: Settings, label: "Settings", href: "/settings" },
+    { icon: Shield, label: "Privacy", href: "/privacy" },
   ]
 
   return (

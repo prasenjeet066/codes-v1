@@ -34,6 +34,12 @@ export default function HomePage() {
                   Get Started
                 </Link>
               </li>
+              <li>
+                {/* Privacy Policy link */}
+                <Link href="/privacy" className="text-gray-700 hover:text-black transition-colors duration-200 font-medium text-base sm:text-lg">
+                  Privacy
+                </Link>
+              </li>
             </ul>
           </nav>
         </div>
