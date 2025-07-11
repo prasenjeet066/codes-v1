@@ -22,7 +22,7 @@ export interface Post {
   post_username: string | null
   post_display_name: string | null
   post_created_at: string | null
-  repost_created_at: string | null
+  repost_created_at?: string | null
   is_verified: boolean
   is_pinned?: boolean
 }
