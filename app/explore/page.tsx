@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { createServerClient } from "@/lib/supabase/server"
-import { ExploreContent } from "@/components/explore/explore-content"
+import { EnhancedExplore } from "@/components/explore/enhanced-explore"
 
 export default async function ExplorePage() {
   const supabase = createServerClient()
@@ -13,5 +13,5 @@ export default async function ExplorePage() {
     redirect("/auth/sign-in")
   }
 
-  return <ExploreContent />
+  return <EnhancedExplore />
 }

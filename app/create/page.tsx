@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { createServerClient } from "@/lib/supabase/server"
-import CreatePostPage  from "@/components/create/create-post-page"
+import EnhancedCreatePost from "@/components/create/enhanced-create-post"
 
 export default async function CreatePage() {
   const supabase = createServerClient()
@@ -13,5 +13,5 @@ export default async function CreatePage() {
     redirect("/auth/sign-in")
   }
 
-  return <CreatePostPage user={user} />
+  return <EnhancedCreatePost user={user} />
 }

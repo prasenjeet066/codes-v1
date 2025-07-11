@@ -10,6 +10,7 @@ import { TrendingHashtags } from "./trending-hashtags"
 import { MobileBottomNav } from "./mobile-bottom-nav"
 import { SearchDialog } from "./search-dialog"
 import { NotificationDialog } from "./notification-dialog"
+import { AccountSuggestions } from "./account-suggestions"
 import { Button } from "@/components/ui/button"
 import { Menu, UserIcon, Plus } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -94,8 +95,13 @@ export function DashboardContent({ user }: DashboardContentProps) {
         </div>
 
         {/* Right Sidebar */}
-        <div className="hidden xl:block w-80 p-4">
+        <div className="hidden xl:block w-80 p-4 space-y-6">
           <TrendingHashtags />
+          <AccountSuggestions 
+            currentUserId={user.id} 
+            variant="sidebar" 
+            limit={5}
+          />
         </div>
       </div>
 
