@@ -58,6 +58,11 @@ export function SettingsContent({ userId }: SettingsContentProps) {
   const [isPrivate, setIsPrivate] = useState(false)
   const [allowMessages, setAllowMessages] = useState(true)
   const [showEmail, setShowEmail] = useState(false)
+  const [allowMentions, setAllowMentions] = useState(true)
+  const [allowFollowers, setAllowFollowers] = useState(true)
+  const [showOnlineStatus, setShowOnlineStatus] = useState(true)
+  const [allowProfileViews, setAllowProfileViews] = useState(true)
+  const [dataSharing, setDataSharing] = useState(false)
 
   // Notification settings
   const [emailNotifications, setEmailNotifications] = useState(true)
@@ -95,6 +100,11 @@ export function SettingsContent({ userId }: SettingsContentProps) {
       setIsPrivate(profileData.is_private || false)
       setAllowMessages(profileData.allow_messages !== false)
       setShowEmail(profileData.show_email || false)
+      setAllowMentions(profileData.allow_mentions !== false)
+      setAllowFollowers(profileData.allow_followers !== false)
+      setShowOnlineStatus(profileData.show_online_status !== false)
+      setAllowProfileViews(profileData.allow_profile_views !== false)
+      setDataSharing(profileData.data_sharing || false)
     } catch (error) {
       console.error("Error fetching user data:", error)
       toast({
@@ -120,6 +130,11 @@ export function SettingsContent({ userId }: SettingsContentProps) {
           is_private: isPrivate,
           allow_messages: allowMessages,
           show_email: showEmail,
+          allow_mentions: allowMentions,
+          allow_followers: allowFollowers,
+          show_online_status: showOnlineStatus,
+          allow_profile_views: allowProfileViews,
+          data_sharing: dataSharing,
         })
         .eq("id", userId)
 
@@ -361,15 +376,108 @@ export function SettingsContent({ userId }: SettingsContentProps) {
 
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
+                      <h3 className="font-medium">Allow Mentions</h3>
+                      <p className="text-sm text-gray-500">Let others mention you in their posts</p>
+                    </div>
+                    <Switch checked={allowMentions} onCheckedChange={setAllowMentions} />
+                  </div>
+
+                  <Separator />
+
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                      <h3 className="font-medium">Allow New Followers</h3>
+                      <p className="text-sm text-gray-500">Let others follow your account</p>
+                    </div>
+                    <Switch checked={allowFollowers} onCheckedChange={setAllowFollowers} />
+                  </div>
+
+                  <Separator />
+
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                      <h3 className="font-medium">Show Online Status</h3>
+                      <p className="text-sm text-gray-500">Display when you're active on the platform</p>
+                    </div>
+                    <Switch checked={showOnlineStatus} onCheckedChange={setShowOnlineStatus} />
+                  </div>
+
+                  <Separator />
+
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
                       <h3 className="font-medium">Show Email</h3>
                       <p className="text-sm text-gray-500">Display your email on your profile</p>
                     </div>
                     <Switch checked={showEmail} onCheckedChange={setShowEmail} />
                   </div>
 
+                  <Separator />
+
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                      <h3 className="font-medium">Allow Profile Views</h3>
+                      <p className="text-sm text-gray-500">Let others see when you view their profile</p>
+                    </div>
+                    <Switch checked={allowProfileViews} onCheckedChange={setAllowProfileViews} />
+                  </div>
+
+                  <Separator />
+
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                      <h3 className="font-medium">Data Sharing</h3>
+                      <p className="text-sm text-gray-500">Allow us to use your data for improving our services</p>
+                    </div>
+                    <Switch checked={dataSharing} onCheckedChange={setDataSharing} />
+                  </div>
+
                   <Button onClick={saveProfile} disabled={saving} className="w-full sm:w-auto">
                     {saving ? "Saving..." : "Save Privacy Settings"}
                   </Button>
+                </CardContent>
+              </Card>
+
+              {/* Data & Privacy Information */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <AlertCircle className="h-5 w-5" />
+                    Data & Privacy Information
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="p-4 bg-blue-50 rounded-lg">
+                    <h4 className="font-medium text-blue-900 mb-2">Your Privacy Rights</h4>
+                    <p className="text-sm text-blue-800">
+                      You have the right to access, modify, or delete your personal data at any time. 
+                      Contact our support team for assistance with data requests.
+                    </p>
+                  </div>
+                  
+                  <div className="p-4 bg-green-50 rounded-lg">
+                    <h4 className="font-medium text-green-900 mb-2">Data Protection</h4>
+                    <p className="text-sm text-green-800">
+                      We use industry-standard encryption and security measures to protect your data. 
+                      Your information is never sold to third parties.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Button variant="outline" className="flex-1" onClick={() => router.push("/privacy")}>
+                      <Shield className="h-4 w-4 mr-2" />
+                      Privacy & Data Settings
+                    </Button>
+                    <Button variant="outline" className="flex-1">
+                      Download My Data
+                    </Button>
+                    <Button variant="outline" className="flex-1">
+                      Privacy Policy
+                    </Button>
+                    <Button variant="outline" className="flex-1">
+                      Terms of Service
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
@@ -499,6 +607,50 @@ export function SettingsContent({ userId }: SettingsContentProps) {
                         <p className="text-sm text-gray-500">@{profile?.username}</p>
                       </div>
                     </div>
+
+                    <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                      <Shield className="h-5 w-5 text-gray-500" />
+                      <div>
+                        <p className="font-medium">Account Status</p>
+                        <p className="text-sm text-gray-500">
+                          {isPrivate ? "Private Account" : "Public Account"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  <div className="space-y-4">
+                    <h3 className="font-medium">Security</h3>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <Button variant="outline" className="flex-1 bg-transparent">
+                        Change Password
+                      </Button>
+                      <Button variant="outline" className="flex-1 bg-transparent">
+                        Two-Factor Authentication
+                      </Button>
+                      <Button variant="outline" className="flex-1 bg-transparent">
+                        Login Sessions
+                      </Button>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  <div className="space-y-4">
+                    <h3 className="font-medium">Data Management</h3>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <Button variant="outline" className="flex-1 bg-transparent">
+                        Download My Data
+                      </Button>
+                      <Button variant="outline" className="flex-1 bg-transparent">
+                        Export Posts
+                      </Button>
+                      <Button variant="outline" className="flex-1 bg-transparent">
+                        Clear Cache
+                      </Button>
+                    </div>
                   </div>
 
                   <Separator />
@@ -513,7 +665,7 @@ export function SettingsContent({ userId }: SettingsContentProps) {
 
                   <div className="flex flex-col sm:flex-row gap-3">
                     <Button variant="outline" className="flex-1 bg-transparent">
-                      Change Password
+                      Deactivate Account
                     </Button>
                     <Button variant="destructive" className="flex-1">
                       Delete Account
