@@ -34,15 +34,14 @@ import {
 } from "lucide-react"
 
 interface SettingsContentProps {
-  userId: string
+  user: any
 }
 
-export function SettingsContent({ userId }: SettingsContentProps) {
+export function SettingsContent({ user }: SettingsContentProps) {
   const router = useRouter()
   const { toast } = useToast()
   const isMobile = useMobile()
 
-  const [user, setUser] = useState<any>(null)
   const [profile, setProfile] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -58,6 +57,12 @@ export function SettingsContent({ userId }: SettingsContentProps) {
   const [isPrivate, setIsPrivate] = useState(false)
   const [allowMessages, setAllowMessages] = useState(true)
   const [showEmail, setShowEmail] = useState(false)
+  const [allowTagging, setAllowTagging] = useState(true)
+  const [allowComments, setAllowComments] = useState(true)
+  const [showActivityStatus, setShowActivityStatus] = useState(true)
+  const [allowDiscoverByEmail, setAllowDiscoverByEmail] = useState(false)
+  const [allowDiscoverByPhone, setAllowDiscoverByPhone] = useState(false)
+  const [readReceipts, setReadReceipts] = useState(true)
 
   // Notification settings
   const [emailNotifications, setEmailNotifications] = useState(true)
@@ -70,7 +75,7 @@ export function SettingsContent({ userId }: SettingsContentProps) {
 
   useEffect(() => {
     fetchUserData()
-  }, [userId])
+  }, [user?.id])
 
   const fetchUserData = async () => {
     try {
