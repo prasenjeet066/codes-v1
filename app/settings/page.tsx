@@ -13,5 +13,5 @@ export default async function SettingsPage() {
     redirect("/auth/sign-in")
   }
 
-  return <SettingsContent user={user} />
+  return <SettingsContent userId={user.id} />
 }
