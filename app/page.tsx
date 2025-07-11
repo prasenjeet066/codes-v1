@@ -1,7 +1,7 @@
 "use client"; // This directive marks the component as a Client Component, necessary for client-side interactivity
 
 import Link from "next/link"; // Import Link for client-side navigation
-import React from "react"; // React is implicitly available in Next.js, but good practice to import
+import * as React from "react"; // Explicit React namespace import for strict type checking
 
 // HomePage component for the Next.js app directory
 export default function HomePage() {
