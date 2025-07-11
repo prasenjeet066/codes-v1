@@ -7,6 +7,7 @@ export interface Post {
   display_name: string
   avatar_url: string | null
   likes_count: number
+  views_count?: number
   is_liked: boolean
   reposts_count: number
   is_reposted: boolean
